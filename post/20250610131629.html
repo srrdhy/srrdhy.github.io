@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Fourier neural operator (FNO) 解读 | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="FNO，是继PINN后一种用“算子学习”的方式求解PDE的方法，全名为傅里叶神经算子(Fourier Neural Operator)。论文地址：https:&#x2F;&#x2F;arxiv.org&#x2F;pdf&#x2F;2010.08895代码参考地址：https:&#x2F;&#x2F;github.com&#x2F;lu-group&#x2F;deeponet-fno&#x2F;tree&#x2F;main?tab&#x3D;readme-ov-file  上图为FNO的网络结构，我们从最简">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fourier neural operator (FNO) 解读">
+<meta property="og:url" content="https://srrdhy.github.io/post/20250610131629.html">
+<meta property="og:site_name" content="一个数字自留地-DIY知识库">
+<meta property="og:description" content="FNO，是继PINN后一种用“算子学习”的方式求解PDE的方法，全名为傅里叶神经算子(Fourier Neural Operator)。论文地址：https:&#x2F;&#x2F;arxiv.org&#x2F;pdf&#x2F;2010.08895代码参考地址：https:&#x2F;&#x2F;github.com&#x2F;lu-group&#x2F;deeponet-fno&#x2F;tree&#x2F;main?tab&#x3D;readme-ov-file  上图为FNO的网络结构，我们从最简">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://srrdhy.github.io/img/article06.jpg">
+<meta property="article:published_time" content="2025-06-10T05:16:29.000Z">
+<meta property="article:modified_time" content="2025-06-10T05:20:38.189Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="FNO">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article06.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Fourier neural operator (FNO) 解读",
+  "url": "https://srrdhy.github.io/post/20250610131629.html",
+  "image": "https://srrdhy.github.io/img/article06.jpg",
+  "datePublished": "2025-06-10T05:16:29.000Z",
+  "dateModified": "2025-06-10T05:20:38.189Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20250610131629.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Fourier neural operator (FNO) 解读',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article06.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">Fourier neural operator (FNO) 解读</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Fourier neural operator (FNO) 解读</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-10T05:16:29.000Z" title="发表于 2025-06-10 13:16:29">2025-06-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-10T05:20:38.189Z" title="更新于 2025-06-10 13:20:38">2025-06-10</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>FNO，是继PINN后一种用“算子学习”的方式求解PDE的方法，全名为傅里叶神经算子(Fourier Neural Operator)。<br>论文地址：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2010.08895">https://arxiv.org/pdf/2010.08895</a><br>代码参考地址：<a target="_blank" rel="noopener" href="https://github.com/lu-group/deeponet-fno/tree/main?tab=readme-ov-file">https://github.com/lu-group/deeponet-fno/tree/main?tab=readme-ov-file</a></p>
+<p><img src="/img/article06/001.png"></p>
+<p>上图为FNO的网络结构，我们从最简单的一维瞬态的 Burger’s Equation 开始上手，控制方程如下：<br>$$\frac{\partial u}{\partial t}+u\frac{\partial u}{\partial x}&#x3D;\nu\frac{\partial^2u}{\partial x^2},\quad x\in(0,1),t\in(0,1],$$<br>采取周期性边界条件，并取$\nu&#x3D;0.1$。</p>
+<p>这里的算子学习就是学习一组初始条件对应的解，神经网络的输入是$u(x,t&#x3D;0)&#x3D;u_o(x)$，输出是$u&#x3D;u(x,t&#x3D;1)$，因此神经网络学习的算子$G$可以表示为：<br>$$G:u_0(x)\mapsto u(x,t&#x3D;1)$$</p>
+<h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p>训练数据集是用matlab生成的，如下图所示：</p>
+<p><img src="/img/article06/002.png"></p>
+<p>$u_0(x)$和$u(x,t&#x3D;1)$就是这里的$a$和$u$，$(2048x8192)$表示有2048组不同的初始条件，每组有8192个$x$的值，这里使用了平均采样，即<code>x = linspace(0,1,8192)</code>。</p>
+<p><img src="/img/article06/003.png"></p>
+<p>上图就是0时刻在位置$(0,1)$上对应$u(x,t)$的值，注意不是$x$的值，故有正有负。</p>
+<p>数据集的生成对于最终结果以及网络的泛化性能可能有重要的影响，这里使用了随机采样方法，核心思想是高斯随机场，这里不展开讲。</p>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>源码有三大部分，主函数FNO_main，神经网络类class FNO1d，以及傅里叶层class SpectralConv1d，首先来看主函数。</p>
+<p>FNO_main的使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    </span><br><span class="line">    training_data_resolution = <span class="number">128</span> <span class="comment"># 采用128分辨率</span></span><br><span class="line">    save_index = <span class="number">0</span> <span class="comment"># 保存模型的编号</span></span><br><span class="line">    </span><br><span class="line">    FNO_main(training_data_resolution, save_index)</span><br></pre></td></tr></table></figure>
+
+<h4 id="基本参数"><a href="#基本参数" class="headerlink" title="基本参数"></a>基本参数</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ntrain = <span class="number">1000</span> <span class="comment"># 训练集大小</span></span><br><span class="line">ntest = <span class="number">200</span> <span class="comment"># 测试集大小</span></span><br><span class="line"></span><br><span class="line">s = train_data_res <span class="comment"># 分辨率，即每个样本的长度，也表示一维坐标的间隔 这里取128</span></span><br><span class="line"><span class="comment"># sub = 2**6 #subsampling rate 子采样率</span></span><br><span class="line">sub = <span class="number">2</span>**<span class="number">13</span> // s  <span class="comment"># subsampling rate (step size) 原始数据长度（2**13）/处理后数据长度（2**7）=下采样率（2**6=64）</span></span><br><span class="line">						   <span class="comment">#  2**13 = 8192  8192/128 = 64</span></span><br><span class="line">batch_size = <span class="number">20</span></span><br><span class="line">learning_rate = <span class="number">0.001</span></span><br><span class="line"></span><br><span class="line">epochs = <span class="number">500</span>       <span class="comment"># default 500</span></span><br><span class="line">step_size = <span class="number">100</span>     <span class="comment"># default 100 与优化器相关</span></span><br><span class="line">gamma = <span class="number">0.5</span>         <span class="comment"># 与优化器相关</span></span><br><span class="line"></span><br><span class="line">modes = <span class="number">16</span>   <span class="comment"># 傅立叶层取前 modes 个模式</span></span><br><span class="line">width = <span class="number">64</span>   <span class="comment"># 网络内部层的神经元个数</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="读入数据-数据处理"><a href="#读入数据-数据处理" class="headerlink" title="读入数据&amp;数据处理"></a>读入数据&amp;数据处理</h4><p>从 .mat 文件读入数据 -&gt; 降采样 -&gt; 分成训练集和测试集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">dataloader = MatReader(<span class="string">&#x27;burgers_data_R10.mat&#x27;</span>)  <span class="comment"># (2048, 8192) 表示的是有2048个样本，每个样本有8192个 x 的值，这里采用的是平均采样，即 x = linspace(0, 1, 8192)。</span></span><br><span class="line">x_data = dataloader.read_field(<span class="string">&#x27;a&#x27;</span>)[:,::sub] <span class="comment">#输入  每隔sub个采一次样</span></span><br><span class="line">y_data = dataloader.read_field(<span class="string">&#x27;u&#x27;</span>)[:,::sub] <span class="comment">#输出  (2048, 128)</span></span><br><span class="line"></span><br><span class="line">x_train = x_data[:ntrain,:] <span class="comment"># (1000, 128)</span></span><br><span class="line">y_train = y_data[:ntrain,:]</span><br><span class="line">x_test = x_data[-ntest:,:] <span class="comment"># (200, 128)</span></span><br><span class="line">y_test = y_data[-ntest:,:]</span><br></pre></td></tr></table></figure>
+
+<p><code>x_data</code>，<code>y_data</code>只包括$u(x,t)$的数值，2048组初始条件，取了1000组作为训练集，200组作为测试集，下面生成了网格位置$x$的数据，与$u$拼接在一起，最终形成一个维度 (1000, 128, 2) 的数据集作为整体输入，训练的时候一批的大小为 (batch_size&#x3D;20, 128, 2)，最后一个维度的两个数分别为该位置初始时刻的大小以及该位置的坐标。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># cat the locations information</span></span><br><span class="line">grid_all = np.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>**<span class="number">13</span>).reshape(<span class="number">2</span>**<span class="number">13</span>, <span class="number">1</span>).astype(np.float64) <span class="comment"># 网格的数据</span></span><br><span class="line">grid = grid_all[::sub,:]</span><br><span class="line">grid = torch.tensor(grid, dtype=torch.<span class="built_in">float</span>)</span><br><span class="line">x_train = torch.cat([x_train.reshape(ntrain,s,<span class="number">1</span>), grid.repeat(ntrain,<span class="number">1</span>,<span class="number">1</span>)], dim=<span class="number">2</span>) <span class="comment"># 把初始条件和网格位置拼接cat在一起，最终形成一个维度 (1000, 128, 2) 的数据集作为整体输入</span></span><br><span class="line">x_test = torch.cat([x_test.reshape(ntest,s,<span class="number">1</span>), grid.repeat(ntest,<span class="number">1</span>,<span class="number">1</span>)], dim=<span class="number">2</span>)</span><br><span class="line"><span class="comment"># 训练的时候一批的大小为 (batch_size=20, 128, 2)，最后一个维度的两个数分别为该位置初始时刻的大小以及该位置的坐标。</span></span><br><span class="line"></span><br><span class="line">train_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_train, y_train), batch_size=batch_size, shuffle=<span class="literal">True</span>)</span><br><span class="line">test_loader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(x_test, y_test), batch_size=batch_size, shuffle=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>grid.repeat(ntrain,1,1)</code> 就是在 <code>dim = 0</code>这个维度(不同样本的维度)进行重复，简单来说就是使得 <code>grid[x, a, b] = grid[y, a, b]</code>。</p>
+<h4 id="class-FNO1d"><a href="#class-FNO1d" class="headerlink" title="class FNO1d"></a>class FNO1d</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">FNO1d</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, modes, width</span>):</span><br><span class="line">        <span class="built_in">super</span>(FNO1d, <span class="variable language_">self</span>).__init__()</span><br><span class="line"></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        The overall network. It contains 4 layers of the Fourier layer.</span></span><br><span class="line"><span class="string">        1. Lift the input to the desire channel dimension by self.fc0 .</span></span><br><span class="line"><span class="string">        2. 4 layers of the integral operators u&#x27; = (W + K)(u).</span></span><br><span class="line"><span class="string">            W defined by self.w; K defined by self.conv .</span></span><br><span class="line"><span class="string">        3. Project from the channel space to the output space by self.fc1 and self.fc2 .</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">        input: the solution of the initial condition and location (a(x), x)</span></span><br><span class="line"><span class="string">        input shape: (batchsize, x=s, c=2)</span></span><br><span class="line"><span class="string">        output: the solution of a later timestep</span></span><br><span class="line"><span class="string">        output shape: (batchsize, x=s, c=1)</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.modes1 = modes <span class="comment"># 16</span></span><br><span class="line">        <span class="variable language_">self</span>.width = width <span class="comment"># 64</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 提升维度部分  从2维升到64维</span></span><br><span class="line">        <span class="variable language_">self</span>.fc0 = nn.Linear(<span class="number">2</span>, <span class="variable language_">self</span>.width) <span class="comment"># input channel is 2: (a(x), x)</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        输入时的维度是(20, 128, 2), 其中第一个维度20指的是 batch_size=20。</span></span><br><span class="line"><span class="string">        通过 self.fc0 = nn.Linear(2, self.width=64) 后维度变为 (20, 128, 64)。这一步是 position-wise 的，即对于每一个(a(x), x)对单独操作。</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 傅立叶层部分</span></span><br><span class="line">        <span class="variable language_">self</span>.conv0 = SpectralConv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="variable language_">self</span>.modes1)</span><br><span class="line">        <span class="variable language_">self</span>.conv1 = SpectralConv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="variable language_">self</span>.modes1)</span><br><span class="line">        <span class="variable language_">self</span>.conv2 = SpectralConv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="variable language_">self</span>.modes1)</span><br><span class="line">        <span class="variable language_">self</span>.conv3 = SpectralConv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="variable language_">self</span>.modes1)</span><br><span class="line">        <span class="variable language_">self</span>.w0 = nn.Conv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.w1 = nn.Conv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.w2 = nn.Conv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.w3 = nn.Conv1d(<span class="variable language_">self</span>.width, <span class="variable language_">self</span>.width, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 降低维度部分</span></span><br><span class="line">        <span class="variable language_">self</span>.fc1 = nn.Linear(<span class="variable language_">self</span>.width, <span class="number">128</span>)</span><br><span class="line">        <span class="variable language_">self</span>.fc2 = nn.Linear(<span class="number">128</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>具体神经网络输入时的维度是（20, 128, 2），其中第一个维度20指的是 batch_size&#x3D;20。这里通过fc0的升维操作变成 (20, 128, 64)。既达到了和网格数量多少无关，又提高了维度，这一步也是 FNO 输入与网格粗细无关的重要一环(另一环和傅立叶变换后取固定长度模式有关)。</p>
+<p>提升维度有两个好处：</p>
+<ol>
+<li><p>因为目前维度(128, 2)的特征不过是一个更高维度的函数空间在有限维度的投影，目前这个长度可能不足以表征原始函数空间到另一个函数空间的映射(或者说不能在要求的精度下完成)，因此这一步操作把特征的长度扩充到了(128, 64)，之后的神经网络变换都在这个大小基础上进行(在更接近原来函数空间的一个高维空间进行)，能够学习到更复杂的变换，最后再投影回低维度。</p>
+</li>
+<li><p>保持第一个维度128不变。一方面这样可以做到和网格粗细无关，另一方面也是考虑到后续的傅立叶变换。因为第一个维度是有物理意义的，它是和位置&#x2F;网格直接关联的，对这个维度进行傅立叶变换是一个更有物理意义的操作(后续有一个permute操作)，倘若再这个维度进行升维，就失去了原有的物理意义(到了一个更抽象的高维空间，对它进行傅立叶变换的话可能可行，但很难讲出道理)。</p>
+</li>
+</ol>
+<p>最后从<code>forward</code>函数看看整体流程：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line"></span><br><span class="line">	x = <span class="variable language_">self</span>.fc0(x) <span class="comment"># (20, 128, 64)</span></span><br><span class="line">	x = x.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">	<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">	torch.permute 其实就是对数组不同维度进行变换，本例的结果就会导致 x&#x27;[a, b, c] = x[a, c, b],</span></span><br><span class="line"><span class="string">	那么维度也随之从原来的(20, 128, 64)变为(20, 64, 128)，之所以做这个变换也是因为之后的傅立叶变换</span></span><br><span class="line"><span class="string">	是针对长度为128的那个和位置相关的维度, 而人们习惯于操作最后一个维度, 因此把这个维度变换到最后一维。</span></span><br><span class="line"><span class="string">	&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">	x1 = <span class="variable language_">self</span>.conv0(x) <span class="comment"># x1维度 (20, 64, 128)</span></span><br><span class="line">	x2 = <span class="variable language_">self</span>.w0(x)    <span class="comment"># x2维度 (20, 64, 128)</span></span><br><span class="line">	x = x1 + x2</span><br><span class="line">	x = F.relu(x)</span><br><span class="line"></span><br><span class="line">	x1 = <span class="variable language_">self</span>.conv1(x)</span><br><span class="line">	x2 = <span class="variable language_">self</span>.w1(x)</span><br><span class="line">	x = x1 + x2</span><br><span class="line">	x = F.relu(x)</span><br><span class="line"></span><br><span class="line">	x1 = <span class="variable language_">self</span>.conv2(x)</span><br><span class="line">	x2 = <span class="variable language_">self</span>.w2(x)</span><br><span class="line">	x = x1 + x2</span><br><span class="line">	x = F.relu(x)</span><br><span class="line"></span><br><span class="line">	x1 = <span class="variable language_">self</span>.conv3(x)</span><br><span class="line">	x2 = <span class="variable language_">self</span>.w3(x)</span><br><span class="line">	x = x1 + x2</span><br><span class="line"></span><br><span class="line">	x = x.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">	x = <span class="variable language_">self</span>.fc1(x)</span><br><span class="line">	x = F.relu(x)</span><br><span class="line">	x = <span class="variable language_">self</span>.fc2(x)</span><br><span class="line">	<span class="keyword">return</span> x <span class="comment"># (20, 128, 1)</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到升维和降维之间有4个傅里叶层：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x1 = <span class="variable language_">self</span>.conv0(x) </span><br><span class="line">x2 = <span class="variable language_">self</span>.w0(x)   </span><br><span class="line">x = x1 + x2</span><br><span class="line">x = F.relu(x)</span><br></pre></td></tr></table></figure>
+
+<p>与前面网络结构图展示的一致，一个傅里叶块包括一个傅里叶层和一个偏置，其中偏置是一个一维卷基层，输入通道输和输出通道数相等为<code>width=64</code>，卷积核大小为<code>1x1</code>。二者相加，再有一个激活函数。</p>
+<h4 id="class-SpectralConv1d"><a href="#class-SpectralConv1d" class="headerlink" title="class SpectralConv1d"></a>class SpectralConv1d</h4><p>下面是傅里叶层的具体实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SpectralConv1d</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_channels, out_channels, modes1</span>):  <span class="comment"># modes1 = 16</span></span><br><span class="line">        <span class="built_in">super</span>(SpectralConv1d, <span class="variable language_">self</span>).__init__()</span><br><span class="line"></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        1D Fourier layer. It does FFT, linear transform, and Inverse FFT.    </span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.in_channels = in_channels</span><br><span class="line">        <span class="variable language_">self</span>.out_channels = out_channels</span><br><span class="line">        <span class="variable language_">self</span>.modes1 = modes1  <span class="comment">#Number of Fourier modes to multiply, at most floor(N/2) + 1</span></span><br><span class="line"></span><br><span class="line">        <span class="variable language_">self</span>.scale = (<span class="number">1</span> / (in_channels*out_channels))</span><br><span class="line">        <span class="variable language_">self</span>.weights1 = nn.Parameter(<span class="variable language_">self</span>.scale * torch.rand(in_channels, out_channels, <span class="variable language_">self</span>.modes1, dtype=torch.cfloat))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Complex multiplication</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">compl_mul1d</span>(<span class="params">self, <span class="built_in">input</span>, weights</span>):</span><br><span class="line">        <span class="comment"># (batch, in_channel, x ), (in_channel, out_channel, x) -&gt; (batch, out_channel, x)</span></span><br><span class="line">        <span class="keyword">return</span> torch.einsum(<span class="string">&quot;bix,iox-&gt;box&quot;</span>, <span class="built_in">input</span>, weights)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        batchsize = x.shape[<span class="number">0</span>] <span class="comment"># 不一定等于20(最后一轮迭代可能不整除)</span></span><br><span class="line">        <span class="comment">#Compute Fourier coeffcients up to factor of e^(- something constant)</span></span><br><span class="line">        x_ft = torch.fft.rfft(x)</span><br><span class="line">        <span class="comment"># 傅立叶变换，默认是对最后一个维度，例如输入是(20, 64, 128)，则会对20\times 64个长度为128的向量做傅立叶变换，输出长度为65的向量，代表频域的系数</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Multiply relevant Fourier modes</span></span><br><span class="line">        out_ft = torch.zeros(batchsize, <span class="variable language_">self</span>.out_channels, x.size(-<span class="number">1</span>)//<span class="number">2</span> + <span class="number">1</span>,  device=x.device, dtype=torch.cfloat)</span><br><span class="line">        out_ft[:, :, :<span class="variable language_">self</span>.modes1] = <span class="variable language_">self</span>.compl_mul1d(x_ft[:, :, :<span class="variable language_">self</span>.modes1], <span class="variable language_">self</span>.weights1)</span><br><span class="line"></span><br><span class="line">        <span class="comment">#Return to physical space</span></span><br><span class="line">        x = torch.fft.irfft(out_ft, n=x.size(-<span class="number">1</span>)) <span class="comment"># n=x.size(-1)是说长度不够的话自动补0，确保输出长度为x.size(-1)=128</span></span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+
+<p><code>self.weights1</code>权重维数为(64, 64, 16)，最后一个维度是傅立叶变换截断的阶数16。</p>
+<p>傅立叶层的一部分其实就像是频域做了一次全连接，不管输入多长，变换到频域后总是取前16个进行变换再反变换，因此和长度&#x2F;网格粗细无关。</p>
+<h4 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=<span class="number">1e-4</span>)</span><br><span class="line">scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=gamma)</span><br></pre></td></tr></table></figure>
+
+<p>使用Adam算法，并每过 <code>step_size</code>个epoch就让学习率乘一个<code>gamma</code>作衰减。</p>
+<h4 id="utilities"><a href="#utilities" class="headerlink" title="utilities"></a>utilities</h4><p>代码引入了三个自定义函数(类)，MatReader、count_params、LpLoss，这里做简要介绍。</p>
+<p>MatReader类用于读取.mat数据。</p>
+<p>LpLoss用于计算$L_p$范数损失，这里采用$L_2$损失，可选相对误差与绝对误差。</p>
+<p>count_params用于计算任意神经网络模型的参数量，挺有意思的泛用性函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">count_params</span>(<span class="params">model</span>):</span><br><span class="line">    c = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> p <span class="keyword">in</span> <span class="built_in">list</span>(model.parameters()):</span><br><span class="line">        c += reduce(operator.mul, <span class="built_in">list</span>(p.size()))</span><br><span class="line">    <span class="keyword">return</span> c</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><p>一次训练结果的输出如下，可以看到，使用傅里叶变换，计算都变成乘法，速度很快，误差也在1%左右：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Epoch: <span class="number">499</span>, time: <span class="number">0.188</span>, Train Loss: <span class="number">6.387e-05</span>, Train l2: <span class="number">0.0108</span>, Test l2: <span class="number">0.0117</span></span><br><span class="line"></span><br><span class="line">=============================</span><br><span class="line">Training done...</span><br><span class="line">Training time: <span class="number">95.983</span></span><br><span class="line">=============================</span><br></pre></td></tr></table></figure>
+
+<p>保存了模型，并生成了不同分辨率下的测试集</p>
+<p><img src="/img/article06/004.png"></p>
+<p>绘制结果matlab代码：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 加载数据</span></span><br><span class="line">data = load(<span class="string">&#x27;burger_test_1024.mat&#x27;</span>);</span><br><span class="line">x_test = data.x_test;        <span class="comment">% 测试输入</span></span><br><span class="line">y_test = data.y_test;        <span class="comment">% 目标输出</span></span><br><span class="line">y_pred = data.y_pred;        <span class="comment">% 预测结果</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% 指定要绘制的行</span></span><br><span class="line">row_to_plot = <span class="number">10</span>;  <span class="comment">% 可以修改此行以选择不同的行</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% 创建一个新的图形窗口</span></span><br><span class="line"><span class="built_in">figure</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">% 绘制目标输出 y_test</span></span><br><span class="line"><span class="built_in">hold</span> on; <span class="comment">% 保持当前图形</span></span><br><span class="line"><span class="built_in">plot</span>(x_test(row_to_plot, :), y_test(row_to_plot, :), <span class="string">&#x27;b-&#x27;</span>, <span class="string">&#x27;DisplayName&#x27;</span>, <span class="string">&#x27;y_&#123;test&#125;&#x27;</span>); <span class="comment">% 指定行的目标输出</span></span><br><span class="line"><span class="built_in">plot</span>(x_test(row_to_plot, :), y_pred(row_to_plot, :), <span class="string">&#x27;r--&#x27;</span>, <span class="string">&#x27;DisplayName&#x27;</span>, <span class="string">&#x27;y_&#123;pred&#125;&#x27;</span>); <span class="comment">% 指定行的预测结果</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% 添加图例</span></span><br><span class="line"><span class="built_in">legend</span> show;</span><br><span class="line">xlabel(<span class="string">&#x27;u_&#123;x,t=0&#125;&#x27;</span>);</span><br><span class="line">ylabel(<span class="string">&#x27;u_&#123;x,t=1&#125;&#x27;</span>);</span><br><span class="line">title([<span class="string">&#x27;Comparison of y_&#123;test&#125; and y_&#123;pred&#125; for Row &#x27;</span> num2str(row_to_plot)]);</span><br><span class="line">grid on; <span class="comment">% 添加网格</span></span><br><span class="line"><span class="built_in">hold</span> off; <span class="comment">% 释放图形</span></span><br></pre></td></tr></table></figure>
+
+<p>测试横坐标是0s的u，纵坐标是1s的u</p>
+<p><img src="/img/article06/005.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20250610131629.html">https://srrdhy.github.io/post/20250610131629.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://srrdhy.github.io" target="_blank">一个数字自留地-DIY知识库</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/FNO/">FNO</a></div><div class="post-share"><div class="social-share" data-image="/img/article06.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/post/20250609181412.html" title="4.使用Scipy库中的fft"><img class="cover" src="/img/article05.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">4.使用Scipy库中的fft</div></div><div class="info-2"><div class="info-item-1">在实际使用中，我们自己编写的fft函数肯定不如专门优化过的库，这里我们使用scipy。 123import numpy as npimport matplotlib.pyplot as pltfrom scipy import fft  做一下数据准备： 1234567891011121314151617181920212223rate = 100 # rate 是采样率（每秒采样点数，单位：Hz）interval = 1 / ratet_start = 0t_end = 1t = np.arange(t_start, t_end, interval) # (0, 1, 1/100)  时间采样def getSineSignal(amps, freqs, t):  # 接受振幅和频率数组并生成组合信号的函数    x = np.zeros_like(t)    for a, f in zip(amps, freqs):         x += a * np.sin(2 * np.pi * f * t)    return xamps = np.array([9, 10,...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">技术博客, 记录物理学, 数学与AI的探索</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">数据准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%8F%82%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">基本参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%BB%E5%85%A5%E6%95%B0%E6%8D%AE-%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">读入数据&amp;数据处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#class-FNO1d"><span class="toc-number">2.3.</span> <span class="toc-text">class FNO1d</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#class-SpectralConv1d"><span class="toc-number">2.4.</span> <span class="toc-text">class SpectralConv1d</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-number">2.5.</span> <span class="toc-text">优化器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#utilities"><span class="toc-number">2.6.</span> <span class="toc-text">utilities</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-number">3.</span> <span class="toc-text">测试结果</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读"><img src="/img/article06.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Fourier neural operator (FNO) 解读"/></a><div class="content"><a class="title" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读">Fourier neural operator (FNO) 解读</a><time datetime="2025-06-10T05:16:29.000Z" title="发表于 2025-06-10 13:16:29">2025-06-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609181412.html" title="4.使用Scipy库中的fft"><img src="/img/article05.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="4.使用Scipy库中的fft"/></a><div class="content"><a class="title" href="/post/20250609181412.html" title="4.使用Scipy库中的fft">4.使用Scipy库中的fft</a><time datetime="2025-06-09T10:14:12.000Z" title="发表于 2025-06-09 18:14:12">2025-06-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609175112.html" title="3.在Python中实现快速傅里叶变换(FFT)"><img src="/img/article04.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="3.在Python中实现快速傅里叶变换(FFT)"/></a><div class="content"><a class="title" href="/post/20250609175112.html" title="3.在Python中实现快速傅里叶变换(FFT)">3.在Python中实现快速傅里叶变换(FFT)</a><time datetime="2025-06-09T09:51:12.000Z" title="发表于 2025-06-09 17:51:12">2025-06-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609164012.html" title="2.实现Python中的离散傅里叶逆变换"><img src="/img/article03.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2.实现Python中的离散傅里叶逆变换"/></a><div class="content"><a class="title" href="/post/20250609164012.html" title="2.实现Python中的离散傅里叶逆变换">2.实现Python中的离散傅里叶逆变换</a><time datetime="2025-06-09T08:40:12.000Z" title="发表于 2025-06-09 16:40:12">2025-06-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609110500.html" title="1.在Python中实现离散傅里叶变换"><img src="/img/article02.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="1.在Python中实现离散傅里叶变换"/></a><div class="content"><a class="title" href="/post/20250609110500.html" title="1.在Python中实现离散傅里叶变换">1.在Python中实现离散傅里叶变换</a><time datetime="2025-06-09T03:05:00.000Z" title="发表于 2025-06-09 11:05:00">2025-06-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By FAVE</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
