@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>FF-PINN 傅里叶特征嵌入 | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。 具体而言，做了如下变换：$$:{\gamma:}{i}\left(X\right)&#x3D;\left[\begin{array}{c}\text{c}\text{o}\text{s}">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>FF-PINN 傅里叶特征嵌入 | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。 具体而言，做了如下变换：$$\gamma_{i}(X) &#x3D; \begin{bmatrix}\cos(2\pi \beta_{i} X) \\sin(2\pi \beta_{i}">
 <meta property="og:type" content="article">
 <meta property="og:title" content="FF-PINN 傅里叶特征嵌入">
 <meta property="og:url" content="https://srrdhy.github.io/post/20250617164213.html">
 <meta property="og:site_name" content="一个数字自留地-DIY知识库">
-<meta property="og:description" content="FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。 具体而言，做了如下变换：$$:{\gamma:}{i}\left(X\right)&#x3D;\left[\begin{array}{c}\text{c}\text{o}\text{s}">
+<meta property="og:description" content="FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。 具体而言，做了如下变换：$$\gamma_{i}(X) &#x3D; \begin{bmatrix}\cos(2\pi \beta_{i} X) \\sin(2\pi \beta_{i}">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://srrdhy.github.io/img/article07.jpg">
 <meta property="article:published_time" content="2025-06-17T08:42:13.000Z">
-<meta property="article:modified_time" content="2025-06-17T09:25:19.500Z">
+<meta property="article:modified_time" content="2025-06-17T09:30:52.255Z">
 <meta property="article:author" content="FAVE">
 <meta property="article:tag" content="Fourier feature">
 <meta name="twitter:card" content="summary">
@@ -18,7 +18,7 @@
   "url": "https://srrdhy.github.io/post/20250617164213.html",
   "image": "https://srrdhy.github.io/img/article07.jpg",
   "datePublished": "2025-06-17T08:42:13.000Z",
-  "dateModified": "2025-06-17T09:25:19.500Z",
+  "dateModified": "2025-06-17T09:30:52.255Z",
   "author": [
     {
       "@type": "Person",
@@ -159,8 +159,8 @@
   isHighlightShrink: false,
   isToc: false,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article07.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">FF-PINN 傅里叶特征嵌入</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">FF-PINN 傅里叶特征嵌入</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-17T08:42:13.000Z" title="发表于 2025-06-17 16:42:13">2025-06-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-17T09:25:19.500Z" title="更新于 2025-06-17 17:25:19">2025-06-17</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。</p>
-<p>具体而言，做了如下变换：<br>$$:{\gamma:}<em>{i}\left(X\right)&#x3D;\left[\begin{array}{c}\text{c}\text{o}\text{s}\left(2\pi:{\beta:}</em>{i}X\right)\:\text{s}\text{i}\text{n}\left(2\pi:{\beta:}_{i}X\right)\end{array}\right], {\text{for}} i&#x3D;1,:2,\ldots:,:S$$<br>这里$\gamma$代表FF，$X$代表PINN的输入向量，参数$\beta$取自高斯分布$N(\mu, \sigma)$。</p>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article07.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">FF-PINN 傅里叶特征嵌入</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">FF-PINN 傅里叶特征嵌入</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-17T08:42:13.000Z" title="发表于 2025-06-17 16:42:13">2025-06-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-17T09:30:52.255Z" title="更新于 2025-06-17 17:30:52">2025-06-17</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。</p>
+<p>具体而言，做了如下变换：<br>$$<br>\gamma_{i}(X) &#x3D; \begin{bmatrix}<br>\cos(2\pi \beta_{i} X) \<br>\sin(2\pi \beta_{i} X)<br>\end{bmatrix}, \quad \text{for } i&#x3D;1, 2, \ldots, S<br>$$<br>这里$\gamma$代表FF，$X$代表PINN的输入向量，参数$\beta$取自高斯分布$N(\mu, \sigma)$。</p>
 <p>示意图如下，在输入层与第一层隐藏层之间添加了$FF$层：</p>
 <p><img src="/img/article07/001.png"></p>
 <p>具体代码实现：</p>
