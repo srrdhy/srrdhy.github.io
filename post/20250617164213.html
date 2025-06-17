@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>FF-PINN | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。 具体而言，做了如下变换：$$:{\gamma:}{i}\left(X\right)&#x3D;\left[\begin{array}{c}\text{c}\text{o}\text{s}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FF-PINN">
+<meta property="og:url" content="https://srrdhy.github.io/post/20250617164213.html">
+<meta property="og:site_name" content="一个数字自留地-DIY知识库">
+<meta property="og:description" content="FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。 具体而言，做了如下变换：$$:{\gamma:}{i}\left(X\right)&#x3D;\left[\begin{array}{c}\text{c}\text{o}\text{s}">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://srrdhy.github.io/img/article07.jpg">
+<meta property="article:published_time" content="2025-06-17T08:42:13.000Z">
+<meta property="article:modified_time" content="2025-06-17T08:47:13.492Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="Fourier feature">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article07.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "FF-PINN",
+  "url": "https://srrdhy.github.io/post/20250617164213.html",
+  "image": "https://srrdhy.github.io/img/article07.jpg",
+  "datePublished": "2025-06-17T08:42:13.000Z",
+  "dateModified": "2025-06-17T08:47:13.492Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20250617164213.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'FF-PINN',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article07.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">FF-PINN</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">FF-PINN</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-17T08:42:13.000Z" title="发表于 2025-06-17 16:42:13">2025-06-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-17T08:47:13.492Z" title="更新于 2025-06-17 16:47:13">2025-06-17</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>FF-PINN，意思是在输入中添加傅里叶特征(Fourier feature)嵌入，该方法通过使用正弦函数将PINN的输入坐标映射到更高维空间，从而增强了PINN模型的细节表示，从而提高了捕捉精细尺度细节的性能。</p>
+<p>具体而言，做了如下变换：<br>$$<br>:{\gamma:}<em>{i}\left(X\right)&#x3D;\left[\begin{array}{c}\text{c}\text{o}\text{s}\left(2\pi:{\beta:}</em>{i}X\right)\:\text{s}\text{i}\text{n}\left(2\pi:{\beta:}_{i}X\right)\end{array}\right], {\text{for}} i&#x3D;1,:2,\ldots:,:S<br>$$<br>这里$\gamma$代表FF，$X$代表PINN的输入向量，参数$\beta$取自高斯分布$N(\mu, \sigma)$。</p>
+<p>示意图如下，在输入层与第一层隐藏层之间添加了$FF$层：</p>
+<p><img src="/img/article07/001.png"></p>
+<p>具体代码实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># Fourier feature mapping using PyTorch operations 傅里叶特征映射函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">input_mapping</span>(<span class="params">x, B</span>): <span class="comment"># B: 变换矩阵</span></span><br><span class="line">    <span class="keyword">if</span> B <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        x_proj = torch.matmul(x, B.t()) * (<span class="number">2.0</span> * np.pi) <span class="comment"># B.t() 转置</span></span><br><span class="line">        <span class="keyword">return</span> torch.cat([torch.sin(x_proj), torch.cos(x_proj)], dim=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里我们用$3\times2$的输入向量演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = torch.tensor([[<span class="number">1.0</span>,<span class="number">2.0</span>], [<span class="number">2.0</span>,<span class="number">3.0</span>], [<span class="number">3.0</span>,<span class="number">4.0</span>]])</span><br><span class="line"><span class="built_in">print</span>(x)</span><br><span class="line"><span class="built_in">print</span>(x.shape)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tensor([[1., 2.], [2., 3.], [3., 4.]]) </span><br><span class="line">torch.Size([3, 2])</span><br></pre></td></tr></table></figure>
+
+<p>生成服从正态分布（高斯分布）的随机数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mapping_size = <span class="number">10</span></span><br><span class="line">B = torch.normal(mean=<span class="number">0</span>, std=<span class="number">1.0</span>, size=(mapping_size, <span class="number">2</span>), dtype=torch.float32)</span><br><span class="line"><span class="built_in">print</span>(B)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tensor([[-1.6859, -1.6255],</span><br><span class="line">        [ 1.1449,  1.1859],</span><br><span class="line">        [ 0.3760, -1.0719],</span><br><span class="line">        [ 1.0152, -0.9373],</span><br><span class="line">        [ 0.8651, -0.2981],</span><br><span class="line">        [-1.1040,  0.6884],</span><br><span class="line">        [ 0.1124, -1.4430],</span><br><span class="line">        [ 0.8184, -0.9454],</span><br><span class="line">        [ 0.6324, -2.4483],</span><br><span class="line">        [-1.2411, -0.4845]])</span><br></pre></td></tr></table></figure>
+
+<p>执行Fourier feature mapping函数中的乘法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = torch.matmul(x, B.t())</span><br><span class="line">a2 = a * (<span class="number">2.0</span> * np.pi)</span><br><span class="line"><span class="built_in">print</span>(a2)</span><br><span class="line"><span class="built_in">print</span>(a2.shape)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tensor([[-31.0199,  22.0959, -11.1077,  -5.4000,   1.6900,   1.7143, -17.4269,</span><br><span class="line">          -6.7378, -26.7930, -13.8870],</span><br><span class="line">        [-51.8264,  36.7408, -15.4802,  -4.9107,   5.2529,  -0.8968, -25.7872,</span><br><span class="line">          -7.5357, -38.2028, -24.7295],</span><br><span class="line">        [-72.6329,  51.3856, -19.8528,  -4.4214,   8.8158,  -3.5079, -34.1476,</span><br><span class="line">          -8.3336, -49.6126, -35.5720]])</span><br><span class="line">torch.Size([3, 10])</span><br></pre></td></tr></table></figure>
+
+<p>返回的$sin$操作，$cos$同理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(torch.sin(a2))</span><br><span class="line"><span class="built_in">print</span>(torch.sin(a2).shape)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tensor([[ 0.3857, -0.1046,  0.9937,  0.7728,  0.9929,  0.9897,  0.9890, -0.4391,</span><br><span class="line">         -0.9960, -0.9689],</span><br><span class="line">        [-1.0000, -0.8182, -0.2258,  0.9804, -0.8574, -0.7813, -0.6088, -0.9498,</span><br><span class="line">         -0.4827,  0.3924],</span><br><span class="line">        [ 0.3674,  0.9002, -0.8432,  0.9580,  0.5720,  0.3582, -0.3986, -0.8872,</span><br><span class="line">          0.6075,  0.8492]])</span><br><span class="line">torch.Size([3, 10])</span><br></pre></td></tr></table></figure>
+
+<p>按最后一个维度进行拼接：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a3 = torch.cat([torch.sin(a2), torch.cos(a2)], dim=-<span class="number">1</span>)</span><br><span class="line"><span class="built_in">print</span>(a3)</span><br><span class="line"><span class="built_in">print</span>(a3.shape)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tensor([[ 0.3857, -0.1046,  0.9937,  0.7728,  0.9929,  0.9897,  0.9890, -0.4391,</span><br><span class="line">         -0.9960, -0.9689,  0.9226, -0.9945,  0.1119,  0.6347, -0.1190, -0.1430,</span><br><span class="line">          0.1476,  0.8984, -0.0894,  0.2476],</span><br><span class="line">        [-1.0000, -0.8182, -0.2258,  0.9804, -0.8574, -0.7813, -0.6088, -0.9498,</span><br><span class="line">         -0.4827,  0.3924,  0.0099,  0.5749, -0.9742,  0.1970,  0.5146,  0.6241,</span><br><span class="line">          0.7934,  0.3129,  0.8758,  0.9198],</span><br><span class="line">        [ 0.3674,  0.9002, -0.8432,  0.9580,  0.5720,  0.3582, -0.3986, -0.8872,</span><br><span class="line">          0.6075,  0.8492, -0.9300,  0.4356,  0.5376, -0.2869, -0.8203, -0.9337,</span><br><span class="line">         -0.9171, -0.4615,  0.7943, -0.5280]])</span><br><span class="line">torch.Size([3, 20])</span><br></pre></td></tr></table></figure>
+
+<p>这里通过傅里叶特征映射，把<code>torch.Size([3, 2])</code> 变成了  <code>torch.Size([3, 20])</code> 。注意mapping_size &#x3D; 10，因为包含正弦和余弦两个部分，所以输出是 <code>2 * mapping_size</code> 。</p>
+<p>具体在PINN中的使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Fourier feature mapping using PyTorch operations </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">input_mapping</span>(<span class="params">x, B</span>): <span class="comment"># B: 变换矩阵</span></span><br><span class="line">    <span class="keyword">if</span> B <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        x_proj = torch.matmul(x, B.t()) * (<span class="number">2.0</span> * np.pi) <span class="comment"># B.t() 转置</span></span><br><span class="line">        <span class="keyword">return</span> torch.cat([torch.sin(x_proj), torch.cos(x_proj)], dim=-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Custom layer for Fourier features</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FourierFeatures</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, B=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(FourierFeatures, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.B = B  <span class="comment"># B is a tensor or None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="keyword">return</span> input_mapping(inputs, <span class="variable language_">self</span>.B)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># Create B_dict with different Fourier feature mappings 不同类型的映射矩阵</span></span><br><span class="line">mapping_size = <span class="number">256</span></span><br><span class="line">B_dict = &#123;</span><br><span class="line">    <span class="string">&#x27;none&#x27;</span>: <span class="literal">None</span>,</span><br><span class="line">    <span class="string">&#x27;gauss_1&#x27;</span>: torch.normal(mean=<span class="number">0</span>, std=<span class="number">1.0</span>, size=(mapping_size, <span class="number">2</span>), dtype=torch.float32),</span><br><span class="line">    <span class="string">&#x27;gauss_10&#x27;</span>: torch.normal(mean=<span class="number">0</span>, std=<span class="number">10.0</span>, size=(mapping_size, <span class="number">2</span>), dtype=torch.float32),</span><br><span class="line">    <span class="string">&#x27;gauss_100&#x27;</span>: torch.normal(mean=<span class="number">0</span>, std=<span class="number">100.0</span>, size=(mapping_size, <span class="number">2</span>), dtype=torch.float32),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">B = B_dict[<span class="string">&#x27;gauss_1&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>把FourierFeatures类嵌入神经网络，这里是一个符号距离函数（SDF）网络：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Define the MLP model with Fourier features</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NeuralSDF</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, B=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(NeuralSDF, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        layers = []</span><br><span class="line">        <span class="comment"># Input layer: Fourier features</span></span><br><span class="line">        <span class="variable language_">self</span>.fourier = FourierFeatures(B=B)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 6 hidden layers with 512 units and ReLU activation</span></span><br><span class="line">        layers.append(nn.Linear(<span class="number">2</span>*mapping_size, <span class="number">512</span>))</span><br><span class="line">        layers.append(nn.ReLU())</span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">            layers.append(nn.Linear(<span class="number">512</span>, <span class="number">512</span>))</span><br><span class="line">            layers.append(nn.ReLU())</span><br><span class="line">        <span class="comment"># Additional dense layers</span></span><br><span class="line">        layers.append(nn.Linear(<span class="number">512</span>, <span class="number">32</span>))</span><br><span class="line">        layers.append(nn.Linear(<span class="number">32</span>, <span class="number">1</span>))  <span class="comment"># Output layer 输出 SDF 值</span></span><br><span class="line">        <span class="variable language_">self</span>.mlp = nn.Sequential(*layers)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = <span class="variable language_">self</span>.fourier(x) <span class="comment"># 输入经过 FourierFeatures 层映射到高维特征</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.mlp(x)</span><br></pre></td></tr></table></figure>
+
+<p>实例化模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">neural_SDF = NeuralSDF(B=B)</span><br></pre></td></tr></table></figure>
+
+
+<p>参考资料：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mkrausai.github.io/research/01_SciML/03_SDFPINNs/">Prof. Dr. Michael A. Kraus, M.Sc.(hons)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.nature.com/articles/s41598-025-99354-5#Sec14">https://www.nature.com/articles/s41598-025-99354-5#Sec14</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0045782521002759">https://www.sciencedirect.com/science/article/pii/S0045782521002759</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20250617164213.html">https://srrdhy.github.io/post/20250617164213.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://srrdhy.github.io" target="_blank">一个数字自留地-DIY知识库</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Fourier-feature/">Fourier feature</a></div><div class="post-share"><div class="social-share" data-image="/img/article07.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读"><img class="cover" src="/img/article06.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Fourier neural operator (FNO) 解读</div></div><div class="info-2"><div class="info-item-1">FNO，是继PINN后一种用“算子学习”的方式求解PDE的方法，全名为傅里叶神经算子(Fourier Neural Operator)。论文地址：https://arxiv.org/pdf/2010.08895代码参考地址：https://github.com/lu-group/deeponet-fno/tree/main?tab=readme-ov-file  上图为FNO的网络结构，我们从最简单的一维瞬态的 Burger’s Equation 开始上手，控制方程如下：$$\frac{\partial u}{\partial t}+u\frac{\partial u}{\partial x}&#x3D;\nu\frac{\partial^2u}{\partial x^2},\quad...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">技术博客, 记录物理学, 数学与AI的探索</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/post/20250617164213.html" title="FF-PINN"><img src="/img/article07.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="FF-PINN"/></a><div class="content"><a class="title" href="/post/20250617164213.html" title="FF-PINN">FF-PINN</a><time datetime="2025-06-17T08:42:13.000Z" title="发表于 2025-06-17 16:42:13">2025-06-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读"><img src="/img/article06.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Fourier neural operator (FNO) 解读"/></a><div class="content"><a class="title" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读">Fourier neural operator (FNO) 解读</a><time datetime="2025-06-10T05:16:29.000Z" title="发表于 2025-06-10 13:16:29">2025-06-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609181412.html" title="4.使用Scipy库中的fft"><img src="/img/article05.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="4.使用Scipy库中的fft"/></a><div class="content"><a class="title" href="/post/20250609181412.html" title="4.使用Scipy库中的fft">4.使用Scipy库中的fft</a><time datetime="2025-06-09T10:14:12.000Z" title="发表于 2025-06-09 18:14:12">2025-06-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609175112.html" title="3.在Python中实现快速傅里叶变换(FFT)"><img src="/img/article04.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="3.在Python中实现快速傅里叶变换(FFT)"/></a><div class="content"><a class="title" href="/post/20250609175112.html" title="3.在Python中实现快速傅里叶变换(FFT)">3.在Python中实现快速傅里叶变换(FFT)</a><time datetime="2025-06-09T09:51:12.000Z" title="发表于 2025-06-09 17:51:12">2025-06-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609164012.html" title="2.实现Python中的离散傅里叶逆变换"><img src="/img/article03.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="2.实现Python中的离散傅里叶逆变换"/></a><div class="content"><a class="title" href="/post/20250609164012.html" title="2.实现Python中的离散傅里叶逆变换">2.实现Python中的离散傅里叶逆变换</a><time datetime="2025-06-09T08:40:12.000Z" title="发表于 2025-06-09 16:40:12">2025-06-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By FAVE</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
