@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04 | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="感谢大佬的教程，此处做文字版整理和补充：  在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04_哔哩哔哩_bilibili  win+R输入control，打开控制面板找到程序 选择启用或关闭Windows功能 把虚拟相关的都打开，包括Virtual Machine Platform，Windows虚拟机监控程序平台，适用于Linux的Windows子系统，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04">
+<meta property="og:url" content="https://srrdhy.github.io/post/20251025131418.html">
+<meta property="og:site_name" content="一个数字自留地-DIY知识库">
+<meta property="og:description" content="感谢大佬的教程，此处做文字版整理和补充：  在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04_哔哩哔哩_bilibili  win+R输入control，打开控制面板找到程序 选择启用或关闭Windows功能 把虚拟相关的都打开，包括Virtual Machine Platform，Windows虚拟机监控程序平台，适用于Linux的Windows子系统，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://srrdhy.github.io/img/article09.jpg">
+<meta property="article:published_time" content="2025-10-25T05:14:18.000Z">
+<meta property="article:modified_time" content="2025-10-25T05:35:19.758Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="WSL">
+<meta property="article:tag" content="Ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article09.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04",
+  "url": "https://srrdhy.github.io/post/20251025131418.html",
+  "image": "https://srrdhy.github.io/img/article09.jpg",
+  "datePublished": "2025-10-25T05:14:18.000Z",
+  "dateModified": "2025-10-25T05:35:19.758Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20251025131418.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article09.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-25T05:14:18.000Z" title="发表于 2025-10-25 13:14:18">2025-10-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-25T05:35:19.758Z" title="更新于 2025-10-25 13:35:19">2025-10-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>感谢大佬的教程，此处做文字版整理和补充：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1qbQGYPEg7/?spm_id_from=333.337.search-card.all.click&vd_source=b8ce1e24661813e17c0c1abf3b2df0ff">在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04_哔哩哔哩_bilibili</a></p>
+</blockquote>
+<p>win+R输入control，打开控制面板找到程序<br><img src="/img/article09/001.png"></p>
+<p>选择启用或关闭Windows功能<br><img src="/img/article09/002.png"></p>
+<p>把虚拟相关的都打开，包括Virtual Machine Platform，Windows虚拟机监控程序平台，适用于Linux的Windows子系统，然后重启电脑生效。<br><img src="/img/article09/003.png"></p>
+<p>win+R输入cmd，打开命令行窗口，输入:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --update</span><br></pre></td></tr></table></figure>
+
+<p>更新完成后输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -v</span><br></pre></td></tr></table></figure>
+
+<p>检查版本内核信息<br><img src="/img/article09/004.png"></p>
+<p>如果以前安装过linux系统，可以查看已安装的 WSL 发行版</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --list --verbose</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/article09/005.png"></p>
+<p>删除多余的 Ubuntu 发行版，如</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --unregister Ubuntu-24.04</span><br></pre></td></tr></table></figure>
+<p>执行后，该 Ubuntu 发行版的所有数据（文件、配置、已安装的软件等）会被<strong>彻底删除</strong>，且无法恢复。</p>
+<p>输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --list --online</span><br></pre></td></tr></table></figure>
+
+<p>列出可安装的linux发行版<br><img src="/img/article09/006.png"></p>
+<p>选择所需版本下载，这里我们输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --install Ubuntu-24.04</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后，输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -l -v</span><br></pre></td></tr></table></figure>
+<p>确认安装成功</p>
+<p>输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl</span><br></pre></td></tr></table></figure>
+<p>系统会提示输入用户名和密码</p>
+<p>设置好后会进入Ubuntu的Shell环境。此后有两种进入方式：</p>
+<ol>
+<li>在Windows搜索框中搜索Ubuntu</li>
+<li>在cmd窗口中输入wsl</li>
+</ol>
+<p>确认系统版本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/os-release</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/article09/007.png"></p>
+<p>接下来使用包管理器对Ubuntu系统进行更新</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br></pre></td></tr></table></figure>
+
+<p>安装neofetch和htop验证系统完整性</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install neofetch htop</span><br></pre></td></tr></table></figure>
+
+<p>运行neofetch，艺术风格展示系统信息概览</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">neofetch</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/article09/008.png"></p>
+<p>htop会显示系统运行情况</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">htop</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/article09/009.png"></p>
+<p>由此，我们可以确认wsl和Ubuntu可以正常使用</p>
+<p>安装几个图形界面应用测试，这里 -y 代表安装过程中自动回答yes</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gimp blender -y</span><br></pre></td></tr></table></figure>
+
+<p>完成后首次启动gimp，你就能感受到加载极为流畅</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gimp</span><br></pre></td></tr></table></figure>
+
+<p><img src="/img/article09/010.png"></p>
+<p>不仅如此，当你打开Windows的开始菜单，也能看到在Ubuntu中安装的软件整齐排列<br><img src="/img/article09/011.png"></p>
+<p>你完全可以像对待win软件一样对待它们，比如固定到桌面上，直接打开，但在Ubuntu里启动会更快<br><img src="/img/article09/012.png"></p>
+<p>随后，我们将添加一个高效的图形化桌面，XFCE 4。执行以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install xfce4-goodies</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们安装xrdp(X Remote Desktop Protocol)，它是远程访问的桥梁</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install xrdp</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后按顺序输入以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak </span><br><span class="line">sudo sed -i &#x27;s/3389/3390/g&#x27; /etc/xrdp/xrdp.ini </span><br><span class="line">sudo sed -i &#x27;s/max_bpp=32/#max_bpp=32\nmax_bpp=128/g&#x27; /etc/xrdp/xrdp.ini </span><br><span class="line">sudo sed -i &#x27;s/xserverbpp=24/#xserverbpp=24\nxserverbpp=128/g&#x27; /etc/xrdp/xrdp.ini sudo /etc/init.d/xrdp start</span><br></pre></td></tr></table></figure>
+
+<p>使用nano编辑启动脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
+
+<p>修改如下，注释最后两行代码，并添加三行代码<br><img src="/img/article09/013.png"></p>
+<p>Ctrl + O保存，Ctrl + X退出</p>
+<p>再次重启xrdp保证生效：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/xrdp start</span><br></pre></td></tr></table></figure>
+
+<p>在Windows桌面菜单搜索栏里搜索远程桌面连接，输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:3390</span><br></pre></td></tr></table></figure>
+
+<p>点击连接后如果出现以下bug：<br><img src="/img/article09/014.png"></p>
+<p>安装ufw</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install ufw -y</span><br></pre></td></tr></table></figure>
+
+<p>启用防火墙并允许 3390 端口的 TCP 连接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw enable </span><br><span class="line">sudo ufw allow 3390/tcp </span><br></pre></td></tr></table></figure>
+
+<p>检查防火墙规则是否生效</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
+<p>正常会显示</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Status: active </span><br><span class="line"></span><br><span class="line">To             Action  From </span><br><span class="line">--             ------  ---- </span><br><span class="line">3390/tcp       ALLOW   Anywhere </span><br><span class="line">3390/tcp (v6)  ALLOW   Anywhere (v6)</span><br></pre></td></tr></table></figure>
+
+<p> WSL 终端中获取 IP 地址，输出类似 172.28.156.89</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip addr show eth0 | grep -oP &#x27;(?&lt;=inet\s)\d+(\.\d+)&#123;3&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>在原先localhost:3390的地方更换为172.28.156.89:3390</p>
+<p>连接后输入之前设置的Ubuntu用户名和密码，点击OK<br><img src="/img/article09/015.png"></p>
+<p>恭喜你，进入了桌面环境，在右上角处可以log out退出<br><img src="/img/article09/016.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20251025131418.html">https://srrdhy.github.io/post/20251025131418.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://srrdhy.github.io" target="_blank">一个数字自留地-DIY知识库</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/WSL/">WSL</a><a class="post-meta__tags" href="/tags/Ubuntu/">Ubuntu</a></div><div class="post-share"><div class="social-share" data-image="/img/article09.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数"><img class="cover" src="/img/article08.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">SDF-PINN 符号距离函数</div></div><div class="info-2"><div class="info-item-1">SDF，符号距离函数(signed distance function)，是一种表示物体表面与空间中任意点之间距离的函数。  对于物体内部的点，SDF值为正； 对于物体外部的点，SDF值为负； 对于物体表面的点，SDF值为零。SDF能够精确描述物体的几何形状和边界，为处理复杂几何问题提供了便利。  比如对于圆形域$\Omega &#x3D; { \mathbf{x} : x^2 + y^2 &lt; 1 }$，$SDF$函数$\phi(x)$定义为点$x$到边界$\partial \Omega$的最短距离：$$\phi(x) &#x3D; 1 - \sqrt{x^2 + y^2}$$  $\phi(\mathbf{x}) &#x3D; 0$，当$\mathbf{x} \in \partial \Omega$； $\phi(\mathbf{x}) &gt; 0$，当$\mathbf{x} \in \Omega$（内部）； $\phi(\mathbf{x}) &lt; 0$，当$\mathbf{x} \notin...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">技术博客, 记录物理学, 数学与AI的探索</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">9</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/post/20251025131418.html" title="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04"><img src="/img/article09.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04"/></a><div class="content"><a class="title" href="/post/20251025131418.html" title="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04">在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04</a><time datetime="2025-10-25T05:14:18.000Z" title="发表于 2025-10-25 13:14:18">2025-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数"><img src="/img/article08.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SDF-PINN 符号距离函数"/></a><div class="content"><a class="title" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数">SDF-PINN 符号距离函数</a><time datetime="2025-06-17T11:50:01.000Z" title="发表于 2025-06-17 19:50:01">2025-06-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250617164213.html" title="FF-PINN 傅里叶特征嵌入"><img src="/img/article07.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="FF-PINN 傅里叶特征嵌入"/></a><div class="content"><a class="title" href="/post/20250617164213.html" title="FF-PINN 傅里叶特征嵌入">FF-PINN 傅里叶特征嵌入</a><time datetime="2025-06-17T08:42:13.000Z" title="发表于 2025-06-17 16:42:13">2025-06-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读"><img src="/img/article06.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Fourier neural operator (FNO) 解读"/></a><div class="content"><a class="title" href="/post/20250610131629.html" title="Fourier neural operator (FNO) 解读">Fourier neural operator (FNO) 解读</a><time datetime="2025-06-10T05:16:29.000Z" title="发表于 2025-06-10 13:16:29">2025-06-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250609181412.html" title="4.使用Scipy库中的fft"><img src="/img/article05.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="4.使用Scipy库中的fft"/></a><div class="content"><a class="title" href="/post/20250609181412.html" title="4.使用Scipy库中的fft">4.使用Scipy库中的fft</a><time datetime="2025-06-09T10:14:12.000Z" title="发表于 2025-06-09 18:14:12">2025-06-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By FAVE</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
