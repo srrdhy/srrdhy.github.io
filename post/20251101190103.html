@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Dual-Balancing PINN论文阅读（下） | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="DB-PINN 现在我们看到上图中红色框内部分，结合了难度系数后，GW-PINN过渡到了DB-PINN，融合了跨平衡(inter-balancing)和内平衡(intra-balancing)。 类似GW-PINN中method 1用max和mean，以DB-PINN中的DB_PINN_mean为例，首先等价做GW-PINN，对每个条件项$i \in { \text{bc}, \text{ic},">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dual-Balancing PINN论文阅读（下）">
+<meta property="og:url" content="https://srrdhy.github.io/post/20251101190103.html">
+<meta property="og:site_name" content="一个数字自留地-DIY知识库">
+<meta property="og:description" content="DB-PINN 现在我们看到上图中红色框内部分，结合了难度系数后，GW-PINN过渡到了DB-PINN，融合了跨平衡(inter-balancing)和内平衡(intra-balancing)。 类似GW-PINN中method 1用max和mean，以DB-PINN中的DB_PINN_mean为例，首先等价做GW-PINN，对每个条件项$i \in { \text{bc}, \text{ic},">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://srrdhy.github.io/img/article11.jpg">
+<meta property="article:published_time" content="2025-11-01T11:01:03.000Z">
+<meta property="article:modified_time" content="2025-11-01T11:02:21.680Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="Dynamic Weighting">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article11.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Dual-Balancing PINN论文阅读（下）",
+  "url": "https://srrdhy.github.io/post/20251101190103.html",
+  "image": "https://srrdhy.github.io/img/article11.jpg",
+  "datePublished": "2025-11-01T11:01:03.000Z",
+  "dateModified": "2025-11-01T11:02:21.680Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20251101190103.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Dual-Balancing PINN论文阅读（下）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article11.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">Dual-Balancing PINN论文阅读（下）</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Dual-Balancing PINN论文阅读（下）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-01T11:01:03.000Z" title="发表于 2025-11-01 19:01:03">2025-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-01T11:02:21.680Z" title="更新于 2025-11-01 19:02:21">2025-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/PINN/">PINN</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="DB-PINN"><a href="#DB-PINN" class="headerlink" title="DB-PINN"></a>DB-PINN</h3><p><img src="/img/article11/001.png"></p>
+<p>现在我们看到上图中红色框内部分，结合了难度系数后，GW-PINN过渡到了DB-PINN，融合了跨平衡(inter-balancing)和内平衡(intra-balancing)。</p>
+<p>类似GW-PINN中method 1用max和mean，以DB-PINN中的DB_PINN_mean为例，首先等价做GW-PINN，对每个条件项$i \in { \text{bc}, \text{ic}, \text{d} }$计算比值：<br>$$<br>\frac{S_r}{S_i} &#x3D; \frac{\max |\nabla L_r|}{\operatorname{mean} |\lambda_i \nabla L_i|}<br>$$<br>然后求和$\sum \frac{S_r}{S_i}&#x3D;G$，得到总尺度，命名为 <code>hat_all</code> 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hat_all = maxr/meanb + maxr/meani + maxr/meand</span><br></pre></td></tr></table></figure>
+
+<p>直觉：如果条件项整体比 PDE 残差“弱”很多，<code>hat_all</code> 就会大，后面三项条件的总权重会被整体抬升，先把大盘尺度对齐。</p>
+<p>现在开始把总尺度分配给内部。</p>
+<p>首先介绍下历史平均：给定一串向量$x_1, x_2, \ldots, x_t$，每当新来一个 $x_t$ 时，更新“到目前为止的算术平均”：<br>$$\mu_t &#x3D; \frac{1}{t} \sum_{k&#x3D;1}^{t} x_k$$<br>直接照定义重算要把全部历史都存起来。在线做法的等价递推是：<br>$$\mu_t &#x3D; \mu_{t-1} + \frac{1}{t}(x_t - \mu_{t-1})&#x3D;\left(1 - \frac{1}{t}\right)\mu_{t-1} + \frac{1}{t} x_t$$</p>
+<p>现在我们设立难度指数 $I$ ， $k$ 是第 $k$ 次权重更新（每 mm 步更新一次）：<br>$$I^{(k)} &#x3D; \frac{L^{(k)}}{\mu^{(k)}}$$<br>注意这里是逐元素&#x2F;分量除法，其中：<br>$$L^{(k)} &#x3D; \left[ L_r^{(k)}, L_{bc}^{(k)}, L_{ic}^{(k)}, L_d^{(k)} \right]$$<br>这是当前第 $k$ 次权重更新的4个原子损失<br>$$\mu^{(k)} &#x3D; \left[ \mu_r^{(k)}, \mu_{bc}^{(k)}, \mu_{ic}^{(k)}, \mu_d^{(k)} \right]$$<br>这是到第 $k$ 次权重更新为止的历史均值，是$L^{(k)}$的均值，参考$\mu_t$的式子，有<br>$$\mu^{(k)} &#x3D; \left(1 - \frac{1}{k}\right)\mu^{(k-1)} + \frac{1}{k} L^{(k)}$$<br>注意这是对每个原子损失项来说的，每次权重更新都会进入一个新的$L^{(k)}$，与之前的$L^{(k)}$共同计算均值。在代码中，历史均值为<code>running_mean_L</code>；k为<code>N_l</code>，初始为0，每次更新+1；<code>L_t = torch.stack((l_reg, l_bc, l_ic, l_data))</code>，即当前的$L^{(k)}$，难度指数<code>l_t_vector = L_t/running_mean_L</code>，这正对应了$I^{(k)} &#x3D; \frac{L^{(k)}}{\mu^{(k)}}$。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean_param = (<span class="number">1.</span> - <span class="number">1</span> / N_l) </span><br><span class="line">running_mean_L = mean_param * running_mean_L + (<span class="number">1</span> - mean_param) * L_t.detach()</span><br><span class="line">l_t_vector = L_t/running_mean_L </span><br></pre></td></tr></table></figure>
+
+<p>这时要把总尺度 $G$ ，也就是<code>hat_all</code>分配给3个条件项，按照难度系数看：<br>$$I &#x3D; \left[ \frac{L_{r}}{\mu_{r}}, \frac{L_{bc}}{\mu_{bc}}, \frac{L_{ic}}{\mu_{ic}}, \frac{L_d}{\mu_d} \right]$$<br>谁的当前损失相对其历史均值更大，$I$ 更大，也就代表更难训练。注意<code>l_t_vector[0]</code>是$\frac{L_{r}}{\mu_{r}}$，残差不参与 $G$ 的分配，所以：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hat_bc = hat_all* l_t_vector[<span class="number">1</span>]/torch.<span class="built_in">sum</span>(l_t_vector[<span class="number">1</span>:])  </span><br><span class="line">hat_ic = hat_all* l_t_vector[<span class="number">2</span>]/torch.<span class="built_in">sum</span>(l_t_vector[<span class="number">1</span>:])  </span><br><span class="line">hat_d = hat_all* l_t_vector[<span class="number">3</span>]/torch.<span class="built_in">sum</span>(l_t_vector[<span class="number">1</span>:]) </span><br></pre></td></tr></table></figure>
+
+<p>$$\hat{\lambda}<em>{bc} &#x3D; G \cdot \frac{I</em>{bc}}{I_{bc} + I_{ic} + I_d}, \quad \hat{\lambda}<em>{ic} &#x3D; G \cdot \frac{I</em>{ic}}{I_{bc} + I_{ic} + I_d}, \quad \hat{\lambda}<em>d &#x3D; G \cdot \frac{I_d}{I</em>{bc} + I_{ic} + I_d}.$$<br>这些$\hat{\lambda}_{bc}$等，相当于即时建议权重。</p>
+<p>最终进行无超参、稳健的在线平滑更新权重系数：<br>$$\lambda_i \leftarrow \left(1 - \frac{1}{N_l}\right)\lambda_i + \frac{1}{N_l} \hat{\lambda}_i$$<br>随着权重更新次数的增多，$\frac{1}{N_l}$ 越后期越小，越平稳。类比GW-PINN中的EMA更新：<br>$$<br>\lambda_i \leftarrow (1 - \alpha)\lambda_i + \alpha \cdot \frac{s_r}{s_i}<br>$$<br>$\frac{1}{N_l}$ 代替了 $\alpha$ ，$\hat{\lambda}_i$ 代替了 $\frac{s_r}{s_i}$ 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">lambd_bc = lam_avg_bc + <span class="number">1</span>/N_l*(hat_bc - lam_avg_bc)  </span><br><span class="line">lambd_ic = lam_avg_ic + <span class="number">1</span>/N_l*(hat_ic - lam_avg_ic)</span><br><span class="line">lambd_d =  lam_avg_d  + <span class="number">1</span>/N_l*(hat_d - lam_avg_d)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 储存上次的lambd</span></span><br><span class="line">lam_avg_bc = lambd_bc</span><br><span class="line">lam_avg_ic = lambd_ic</span><br><span class="line">lam_avg_d = lambd_d</span><br></pre></td></tr></table></figure>
+
+<p>注意首次开始训练时会把以下值初始化为0，使得第一次更新权重时的历史均值就是当前损失。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> epoch == <span class="number">0</span>:</span><br><span class="line">	lam_avg_bc = torch.zeros(<span class="number">1</span>, device=device)</span><br><span class="line">	lam_avg_ic = torch.zeros(<span class="number">1</span>, device=device)</span><br><span class="line">	lam_avg_d = torch.zeros(<span class="number">1</span>, device=device)</span><br><span class="line">	running_mean_L = torch.zeros(<span class="number">1</span>, device=device)</span><br></pre></td></tr></table></figure>
+
+<p>DB_PINN_std方法，DB_PINN_kurt方法类似，只是更改了<code>hat_all</code>的算法。</p>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2505.11117v3">[2505.11117v3] Dual-Balancing for Physics-Informed Neural Networks</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20251101190103.html">https://srrdhy.github.io/post/20251101190103.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://srrdhy.github.io" target="_blank">一个数字自留地-DIY知识库</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Dynamic-Weighting/">Dynamic Weighting</a></div><div class="post-share"><div class="social-share" data-image="/img/article11.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/post/20251031214414.html" title="Dual-Balancing PINN论文阅读（上）"><img class="cover" src="/img/article10.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Dual-Balancing PINN论文阅读（上）</div></div><div class="info-2"><div class="info-item-1">Physics-Informed Neural Networks核心是构建一个带参数 $\theta$ 的神经网络来学习PDE的近似解 $\hat{u}_\theta (\mathbf{x}, t)$  \begin{align*} \mathcal{N}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &= f(\mathbf{x}, t), \quad \mathbf{x} \in \Omega, \, t \in [0, T] \\  \mathcal{B}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &= g(\mathbf{x}, t), \quad \mathbf{x} \in \partial\Omega, \, t \in [0, T] \\  u(\mathbf{x}, 0) &= h(\mathbf{x}), \quad \mathbf{x} \in \Omega \end{align*}在时空域$(\Omega \times [0, T])$中采样点$\left{ \left( \mathbf{X}i^r,...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/post/20251031214414.html" title="Dual-Balancing PINN论文阅读（上）"><img class="cover" src="/img/article10.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-31</div><div class="info-item-2">Dual-Balancing PINN论文阅读（上）</div></div><div class="info-2"><div class="info-item-1">Physics-Informed Neural Networks核心是构建一个带参数 $\theta$ 的神经网络来学习PDE的近似解 $\hat{u}_\theta (\mathbf{x}, t)$  \begin{align*} \mathcal{N}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &= f(\mathbf{x}, t), \quad \mathbf{x} \in \Omega, \, t \in [0, T] \\  \mathcal{B}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &= g(\mathbf{x}, t), \quad \mathbf{x} \in \partial\Omega, \, t \in [0, T] \\  u(\mathbf{x}, 0) &= h(\mathbf{x}), \quad \mathbf{x} \in \Omega \end{align*}在时空域$(\Omega \times [0, T])$中采样点$\left{ \left( \mathbf{X}i^r,...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">技术博客, 记录物理学, 数学与AI的探索</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">7</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#DB-PINN"><span class="toc-number">1.</span> <span class="toc-text">DB-PINN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/post/20251101190103.html" title="Dual-Balancing PINN论文阅读（下）"><img src="/img/article11.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Dual-Balancing PINN论文阅读（下）"/></a><div class="content"><a class="title" href="/post/20251101190103.html" title="Dual-Balancing PINN论文阅读（下）">Dual-Balancing PINN论文阅读（下）</a><time datetime="2025-11-01T11:01:03.000Z" title="发表于 2025-11-01 19:01:03">2025-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20251031214414.html" title="Dual-Balancing PINN论文阅读（上）"><img src="/img/article10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Dual-Balancing PINN论文阅读（上）"/></a><div class="content"><a class="title" href="/post/20251031214414.html" title="Dual-Balancing PINN论文阅读（上）">Dual-Balancing PINN论文阅读（上）</a><time datetime="2025-10-31T13:44:14.000Z" title="发表于 2025-10-31 21:44:14">2025-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20251025131418.html" title="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04"><img src="/img/article09.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04"/></a><div class="content"><a class="title" href="/post/20251025131418.html" title="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04">在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04</a><time datetime="2025-10-25T05:14:18.000Z" title="发表于 2025-10-25 13:14:18">2025-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数"><img src="/img/article08.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SDF-PINN 符号距离函数"/></a><div class="content"><a class="title" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数">SDF-PINN 符号距离函数</a><time datetime="2025-06-17T11:50:01.000Z" title="发表于 2025-06-17 19:50:01">2025-06-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250617164213.html" title="FF-PINN 傅里叶特征嵌入"><img src="/img/article07.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="FF-PINN 傅里叶特征嵌入"/></a><div class="content"><a class="title" href="/post/20250617164213.html" title="FF-PINN 傅里叶特征嵌入">FF-PINN 傅里叶特征嵌入</a><time datetime="2025-06-17T08:42:13.000Z" title="发表于 2025-06-17 16:42:13">2025-06-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By FAVE</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
