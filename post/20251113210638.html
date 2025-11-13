@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>FB-PINN论文阅读01-归一化与硬约束 | 一个数字自留地-DIY知识库</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Note对于PINN，通常损失有基本的两项构成，物理损失和边界损失：$$\mathcal{L}(\theta) &#x3D; \mathcal{L}p(\theta) + \mathcal{L}b(\theta),$$二者有以下形式：$$\mathcal{L}p(\theta) &#x3D; \frac{1}{N_p} \sum{i}^{N_p} | \mathcal{D}[NN(x_i; \th">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FB-PINN论文阅读01-归一化与硬约束">
+<meta property="og:url" content="https://srrdhy.github.io/post/20251113210638.html">
+<meta property="og:site_name" content="一个数字自留地-DIY知识库">
+<meta property="og:description" content="Note对于PINN，通常损失有基本的两项构成，物理损失和边界损失：$$\mathcal{L}(\theta) &#x3D; \mathcal{L}p(\theta) + \mathcal{L}b(\theta),$$二者有以下形式：$$\mathcal{L}p(\theta) &#x3D; \frac{1}{N_p} \sum{i}^{N_p} | \mathcal{D}[NN(x_i; \th">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://srrdhy.github.io/img/article12.jpg">
+<meta property="article:published_time" content="2025-11-13T13:06:38.000Z">
+<meta property="article:modified_time" content="2025-11-13T13:13:14.523Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="strongly constrain">
+<meta property="article:tag" content="normalise">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article12.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "FB-PINN论文阅读01-归一化与硬约束",
+  "url": "https://srrdhy.github.io/post/20251113210638.html",
+  "image": "https://srrdhy.github.io/img/article12.jpg",
+  "datePublished": "2025-11-13T13:06:38.000Z",
+  "dateModified": "2025-11-13T13:13:14.523Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20251113210638.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'FB-PINN论文阅读01-归一化与硬约束',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article12.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">一个数字自留地-DIY知识库</span></a><a class="nav-page-title" href="/"><span class="site-name">FB-PINN论文阅读01-归一化与硬约束</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">FB-PINN论文阅读01-归一化与硬约束</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-13T13:06:38.000Z" title="发表于 2025-11-13 21:06:38">2025-11-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-13T13:13:14.523Z" title="更新于 2025-11-13 21:13:14">2025-11-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/PINN/">PINN</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>对于PINN，通常损失有基本的两项构成，物理损失和边界损失：<br>$$\mathcal{L}(\theta) &#x3D; \mathcal{L}<em>p(\theta) + \mathcal{L}<em>b(\theta),$$<br>二者有以下形式：<br>$$\mathcal{L}<em>p(\theta) &#x3D; \frac{1}{N_p} \sum</em>{i}^{N_p} | \mathcal{D}[NN(x_i; \theta); \lambda] - f(x_i) |^2,$$ $$\mathcal{L}<em>b(\theta) &#x3D; \sum</em>{k} \frac{1}{N</em>{bk}} \sum</em>{j}^{N_{bk}} | \mathcal{B}<em>k[NN(x</em>{kj}; \theta)] - g_k(x_{kj}) |^2,$$<br>上面这种称为软约束，在实际训练中二者通常有冲突，并且调整二者的权重系数也是个繁琐的工作。对此，可以将边界条件直接融入近似解，作为其中必然满足的一部分，如对于波动方程：<br>$$\left[ \nabla^2 - \frac{1}{c^2} \frac{\partial^2}{\partial t^2} \right] u(x, t) &#x3D; f(x, t),$$ $$u(x, 0) &#x3D; g_1(x),$$ $$\frac{\partial u}{\partial t}(x, 0) &#x3D; g_2(x),$$<br>可以假设近似解的形式为：<br>$$\hat{u}(x, t; \theta) &#x3D; g_1(x) + t,g_2(x) + t^2,NN(x, t; \theta)$$<br>如此，在$t&#x3D;0$时，解强制满足$g_1(x)$，在对$t$求导后，$t&#x3D;0$时也强制满足$g_2(x)$，如此损失只需包含物理损失$\mathcal{L}_p(\theta)$，变为简单的无约束优化问题。</p>
+<p>考虑一维示例：<br>$$\frac{du}{dx} &#x3D; \cos(\omega x),$$ $$u(0) &#x3D; 0,$$<br>这个方程有精确解：<br>$$u(x) &#x3D; \frac{1}{\omega} \sin(\omega x)$$<br>我们设计近似解为：<br>$$\hat{u}(x; \theta) &#x3D; \tanh(\omega x) NN(x; \theta)$$<br>这里$x&#x3D;0$时，$tanh(\omega x)&#x3D;0$，并且在远离边界$x&#x3D;0$的地方，其值趋向于$\pm 1$，这样神经网络就无需对该函数进行大量补偿。最终PINN使用的损失函数为：<br>$$\mathcal{L}(\theta) &#x3D; \mathcal{L}<em>p(\theta) &#x3D; \frac{1}{N_p} \sum</em>{i}^{N_p} \left| \frac{d}{dx} \hat{u}(x_i; \theta) - \cos(\omega x_i) \right|^2$$<br>首先对低频情况$\omega &#x3D; 1$进行训练，使用2个隐藏层，每层16个神经元和tanh激活函数的全连接网络，在$x \in [-2\pi, 2\pi]$上均匀分布200个训练点，在$x$进入网络之前，会归一化到$[-1, 1]$，而为了匹配精确解的幅值区域，会让输出乘以$\frac{1}{\omega}$。</p>
+<p>在高频案例$\omega &#x3D; 15$中，训练点增加到3000，并采取了3种不同的网络结构配置，最终预测结果与损失下降如下图所示。</p>
+<p><img src="/img/article12/001.png"></p>
+<p><img src="/img/article12/002.png"></p>
+<p>虽然PINN在低频表现良好，但高频面临巨大困难，要学习高频需要大量参数，且收敛缓慢，精度低。对于该问题，向更高频率扩展等同于向更大的域尺寸扩展，因为我们在把$x$输入网络前已经归一化到$[-1, 1]$，所以保持$\omega &#x3D; 1$不变，同时将域尺寸扩大15倍并重新归一化，与直接将$\omega &#x3D; 15$对于优化来说是一样的。这就引出了FB-PINN。下图是四种情况的$L1$误差对比。</p>
+<p><img src="/img/article12/003.png"></p>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><p>完整代码实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="comment">#torch.manual_seed(0)</span></span><br><span class="line"><span class="comment">#np.random.seed(0)</span></span><br><span class="line"></span><br><span class="line">device = torch.device(<span class="string">&#x27;cuda&#x27;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line"></span><br><span class="line">omega = <span class="number">15</span></span><br><span class="line">units = <span class="number">128</span></span><br><span class="line">depth = <span class="number">5</span></span><br><span class="line">train_num = <span class="number">3000</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Net</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim=<span class="number">1</span>, out_dim=<span class="number">1</span>, units=<span class="number">128</span>, depth=<span class="number">5</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        </span><br><span class="line">        layers = []</span><br><span class="line">        layers.append(nn.Linear(in_dim, units))</span><br><span class="line">        layers.append(nn.Tanh())</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(depth - <span class="number">1</span>):</span><br><span class="line">            layers.append(nn.Linear(units, units))</span><br><span class="line">            layers.append(nn.Tanh())</span><br><span class="line">        </span><br><span class="line">        layers.append(nn.Linear(units, out_dim))</span><br><span class="line">        <span class="variable language_">self</span>.net = nn.Sequential(*layers)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x_norm</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.net(x_norm)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = Net(in_dim=<span class="number">1</span>, out_dim=<span class="number">1</span>, units=units, depth=depth).to(device)</span><br><span class="line"></span><br><span class="line">xmin = -<span class="number">2</span>*np.pi</span><br><span class="line">xmax = <span class="number">2</span>*np.pi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练点</span></span><br><span class="line">x = np.linspace(xmin, xmax, train_num).reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">x = torch.tensor(x, dtype=torch.float32, requires_grad=<span class="literal">True</span>).to(device)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ★ 评估 L1 用的 5000 个点（不需要 grad）</span></span><br><span class="line">x_eval = torch.linspace(xmin, xmax, <span class="number">5000</span>).reshape(-<span class="number">1</span>, <span class="number">1</span>).to(device)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">normalize_x</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2.0</span> * (x - xmin) / (xmax - xmin) - <span class="number">1.0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">u_hat</span>(<span class="params">x</span>):</span><br><span class="line">    x_norm = normalize_x(x)</span><br><span class="line">    nn_out = model(x_norm)</span><br><span class="line">    nn_out = (<span class="number">1.0</span>/omega) * nn_out</span><br><span class="line">    <span class="keyword">return</span> torch.tanh(omega * x) * nn_out</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dudx</span>(<span class="params">x</span>):</span><br><span class="line">    x.requires_grad_(<span class="literal">True</span>)</span><br><span class="line">    u = u_hat(x)</span><br><span class="line">    du_dx = torch.autograd.grad(</span><br><span class="line">        u, x,</span><br><span class="line">        grad_outputs=torch.ones_like(u),</span><br><span class="line">        create_graph=<span class="literal">True</span></span><br><span class="line">    )[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> du_dx</span><br><span class="line"></span><br><span class="line"><span class="comment"># Exact solution</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">u_exact</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">1.0</span>/omega) * torch.sin(omega * x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># --------------------------</span></span><br><span class="line"><span class="comment"># Training loop</span></span><br><span class="line"><span class="comment"># --------------------------</span></span><br><span class="line">optimizer = torch.optim.Adam(model.parameters(), lr=<span class="number">1e-3</span>)</span><br><span class="line">loss_history = []</span><br><span class="line">l1_history = []   <span class="comment"># ★ 用来记录每个 epoch 的 L1 误差</span></span><br><span class="line"></span><br><span class="line">epochs = <span class="number">10000</span></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line"></span><br><span class="line">    pred = dudx(x)</span><br><span class="line">    target = torch.cos(omega * x)</span><br><span class="line">    loss = torch.mean((pred - target)**<span class="number">2</span>)</span><br><span class="line">    loss.backward()</span><br><span class="line">    optimizer.step()</span><br><span class="line"></span><br><span class="line">    loss_history.append(loss.item())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># ★ 每个 epoch 用 5000 个点评估一次 L1 误差</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        u_pred_eval = u_hat(x_eval)           <span class="comment"># PINN 预测</span></span><br><span class="line">        u_true_eval = u_exact(x_eval)         <span class="comment"># 精确解</span></span><br><span class="line">        <span class="comment"># L1 = 平均绝对误差；如果想要相对 L1，可以再除以 mean(|u_true_eval|)</span></span><br><span class="line">        l1 = torch.mean(torch.<span class="built_in">abs</span>(u_pred_eval - u_true_eval)).item()</span><br><span class="line">        l1_history.append(l1)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> epoch % <span class="number">500</span> == <span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Iter <span class="subst">&#123;epoch&#125;</span>/<span class="subst">&#123;epochs&#125;</span>, Loss = <span class="subst">&#123;loss.item():<span class="number">.6</span>e&#125;</span>, L1 = <span class="subst">&#123;l1:<span class="number">.6</span>e&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ★ 训练结束后保存 L1 曲线，方便之后读出来画多条线</span></span><br><span class="line">l1_array = np.array(l1_history)</span><br><span class="line">np.savetxt(<span class="string">f&quot;L1_omega<span class="subst">&#123;omega&#125;</span>_units<span class="subst">&#123;units&#125;</span>_depth<span class="subst">&#123;depth&#125;</span>.txt&quot;</span>, l1_array)</span><br><span class="line"></span><br><span class="line"><span class="comment"># --------------------------</span></span><br><span class="line"><span class="comment"># 可视化解 &amp; 收敛曲线</span></span><br><span class="line"><span class="comment"># --------------------------</span></span><br><span class="line">x_test = torch.linspace(xmin, xmax, <span class="number">1000</span>).reshape(-<span class="number">1</span>,<span class="number">1</span>).to(device)</span><br><span class="line">u_pinn = u_hat(x_test).detach().cpu().numpy()</span><br><span class="line">u_real = u_exact(x_test).detach().cpu().numpy()</span><br><span class="line">x_test_np = x_test.detach().cpu().numpy()</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">4</span>))</span><br><span class="line">plt.plot(x_test_np, u_real, label=<span class="string">&quot;Exact solution&quot;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line">plt.plot(x_test_np, u_pinn, <span class="string">&#x27;--&#x27;</span>, label=<span class="string">&quot;PINN&quot;</span>, linewidth=<span class="number">2</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.title(<span class="string">rf&quot;PINN ($\omega = <span class="subst">&#123;omega&#125;</span>$, depth=<span class="subst">&#123;depth&#125;</span>, units=<span class="subst">&#123;units&#125;</span>)&quot;</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">6</span>,<span class="number">4</span>))</span><br><span class="line">plt.plot(loss_history)</span><br><span class="line">plt.yscale(<span class="string">&quot;log&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Iteration&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;MSE (log scale)&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Physics loss convergence&quot;</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">6</span>,<span class="number">4</span>))</span><br><span class="line">plt.plot(l1_history)</span><br><span class="line">plt.yscale(<span class="string">&quot;log&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Iteration&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;L1 error (log scale)&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;L1 convergence (5000 eval points)&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>注意3个关键函数，<code>u_hat</code>用于给出我们假设的近似解，归一化也在内部进行，尽管给网络输入的是x_norm，但求导时对象是x，如此根据链式法则，PDE方程就不会更改。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">normalize_x</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2.0</span> * (x - xmin) / (xmax - xmin) - <span class="number">1.0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">u_hat</span>(<span class="params">x</span>):</span><br><span class="line">    x_norm = normalize_x(x)</span><br><span class="line">    nn_out = model(x_norm)</span><br><span class="line">    nn_out = (<span class="number">1.0</span>/omega) * nn_out</span><br><span class="line">    <span class="keyword">return</span> torch.tanh(omega * x) * nn_out</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dudx</span>(<span class="params">x</span>):</span><br><span class="line">    x.requires_grad_(<span class="literal">True</span>)</span><br><span class="line">    u = u_hat(x)</span><br><span class="line">    du_dx = torch.autograd.grad(</span><br><span class="line">        u, x,</span><br><span class="line">        grad_outputs=torch.ones_like(u),</span><br><span class="line">        create_graph=<span class="literal">True</span></span><br><span class="line">    )[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> du_dx</span><br></pre></td></tr></table></figure>
+
+<p>误差图对比：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line"><span class="comment"># 文件路径</span></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line">files = [</span><br><span class="line">    <span class="string">&quot;L1_omega1_units16_depth2.txt&quot;</span>,</span><br><span class="line">    <span class="string">&quot;L1_omega15_units16_depth2.txt&quot;</span>,</span><br><span class="line">    <span class="string">&quot;L1_omega15_units64_depth4.txt&quot;</span>,</span><br><span class="line">    <span class="string">&quot;L1_omega15_units128_depth5.txt&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line"><span class="comment"># 每条曲线的 label（对应文件顺序）</span></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line">labels = [</span><br><span class="line">    <span class="string">&quot;PINN ($\\omega = 1$, 2 layers, 16 hidden units)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;PINN ($\\omega = 15$, 2 layers, 16 hidden units)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;PINN ($\\omega = 15$, 4 layers, 64 hidden units)&quot;</span>,</span><br><span class="line">    <span class="string">&quot;PINN ($\\omega = 15$, 5 layers, 128 hidden units)&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义颜色（可选）</span></span><br><span class="line">colors = [<span class="string">&quot;red&quot;</span>, <span class="string">&quot;purple&quot;</span>, <span class="string">&quot;brown&quot;</span>, <span class="string">&quot;gray&quot;</span>]</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>,<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line"><span class="comment"># 逐条加载并绘图</span></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line"><span class="keyword">for</span> f, lab, c <span class="keyword">in</span> <span class="built_in">zip</span>(files, labels, colors):</span><br><span class="line">    l1 = np.loadtxt(f)</span><br><span class="line">    plt.plot(l1, label=lab, linewidth=<span class="number">2</span>, color=c)</span><br><span class="line"></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line"><span class="comment"># 图形格式</span></span><br><span class="line"><span class="comment">#-----------------------------</span></span><br><span class="line">plt.yscale(<span class="string">&quot;log&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Iteration&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;L1 error (log)&quot;</span>)</span><br><span class="line">plt.legend(</span><br><span class="line">    fontsize=<span class="number">10</span>,</span><br><span class="line">    loc=<span class="string">&#x27;center left&#x27;</span>,     <span class="comment"># 图例放左侧</span></span><br><span class="line">    bbox_to_anchor=(<span class="number">1</span>, <span class="number">0.5</span>)   <span class="comment"># (x, y)，x=1 表示图外正右侧</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">plt.title(<span class="string">&quot;L1 convergence comparison&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://link.springer.com/article/10.1007/s10444-023-10065-9">Finite basis physics-informed neural networks (FBPINNs): a scalable domain decomposition approach for solving differential equations | Advances in Computational Mathematics</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20251113210638.html">https://srrdhy.github.io/post/20251113210638.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://srrdhy.github.io" target="_blank">一个数字自留地-DIY知识库</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/strongly-constrain/">strongly constrain</a><a class="post-meta__tags" href="/tags/normalise/">normalise</a></div><div class="post-share"><div class="social-share" data-image="/img/article12.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/post/20251101190103.html" title="Dual-Balancing PINN论文阅读（下）"><img class="cover" src="/img/article11.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Dual-Balancing PINN论文阅读（下）</div></div><div class="info-2"><div class="info-item-1">DB-PINN 现在我们看到上图中红色框内部分，结合了难度系数后，GW-PINN过渡到了DB-PINN，融合了跨平衡(inter-balancing)和内平衡(intra-balancing)。 类似GW-PINN中method 1用max和mean，以DB-PINN中的DB_PINN_mean为例，首先等价做GW-PINN，对每个条件项$i \in { \text{bc}, \text{ic}, \text{d} }$计算比值：$$\frac{S_r}{S_i} &#x3D; \frac{\max |\nabla L_r|}{\operatorname{mean} |\lambda_i \nabla L_i|}$$然后求和$\sum \frac{S_r}{S_i}&#x3D;G$，得到总尺度，命名为 hat_all 。 1hat_all = maxr/meanb + maxr/meani + maxr/meand  直觉：如果条件项整体比 PDE 残差“弱”很多，hat_all...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">技术博客, 记录物理学, 数学与AI的探索</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Note"><span class="toc-number">1.</span> <span class="toc-text">Note</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code"><span class="toc-number">2.</span> <span class="toc-text">Code</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reference"><span class="toc-number">3.</span> <span class="toc-text">Reference</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/post/20251113210638.html" title="FB-PINN论文阅读01-归一化与硬约束"><img src="/img/article12.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="FB-PINN论文阅读01-归一化与硬约束"/></a><div class="content"><a class="title" href="/post/20251113210638.html" title="FB-PINN论文阅读01-归一化与硬约束">FB-PINN论文阅读01-归一化与硬约束</a><time datetime="2025-11-13T13:06:38.000Z" title="发表于 2025-11-13 21:06:38">2025-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20251101190103.html" title="Dual-Balancing PINN论文阅读（下）"><img src="/img/article11.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Dual-Balancing PINN论文阅读（下）"/></a><div class="content"><a class="title" href="/post/20251101190103.html" title="Dual-Balancing PINN论文阅读（下）">Dual-Balancing PINN论文阅读（下）</a><time datetime="2025-11-01T11:01:03.000Z" title="发表于 2025-11-01 19:01:03">2025-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20251031214414.html" title="Dual-Balancing PINN论文阅读（上）"><img src="/img/article10.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Dual-Balancing PINN论文阅读（上）"/></a><div class="content"><a class="title" href="/post/20251031214414.html" title="Dual-Balancing PINN论文阅读（上）">Dual-Balancing PINN论文阅读（上）</a><time datetime="2025-10-31T13:44:14.000Z" title="发表于 2025-10-31 21:44:14">2025-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20251025131418.html" title="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04"><img src="/img/article09.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04"/></a><div class="content"><a class="title" href="/post/20251025131418.html" title="在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04">在Windows 11上 使用 WSL 安装并运行带有图形界面的 Ubuntu 24.04</a><time datetime="2025-10-25T05:14:18.000Z" title="发表于 2025-10-25 13:14:18">2025-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数"><img src="/img/article08.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SDF-PINN 符号距离函数"/></a><div class="content"><a class="title" href="/post/20250617195001.html" title="SDF-PINN 符号距离函数">SDF-PINN 符号距离函数</a><time datetime="2025-06-17T11:50:01.000Z" title="发表于 2025-06-17 19:50:01">2025-06-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By FAVE</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
