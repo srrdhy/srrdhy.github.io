@@ -173,9 +173,9 @@
 </ul>
 <p>In a PINN, using the SDF to assign weights to the loss terms prevents conflicts at the boundary: for points near the boundary the weight of the physics loss is very low, while the weight of the boundary loss is high.</p>
 <p>For instance, in the complex polygonal computational domain shown below, interior points are positive (red) and exterior points are negative (blue); the value is numerically the shortest distance from the point to the polygon boundary, so exterior points get bluer the farther they are from the boundary and interior points get redder the deeper they lie inside, while boundary points are green, with a value of 0.</p>
-<p><img src="/en/img/article08/001.png"></p>
+<p><img src="/img/article08/001.png"></p>
 <p>These sample points are split into a training set and a validation set for training, which finally yields a model that predicts the SDF value for every point:</p>
-<p><img src="/en/img/article08/002.png"></p>
+<p><img src="/img/article08/002.png"></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/srrdhy/SDF-PINN/tree/main">The concrete PyTorch implementation is here</a>. The original author implemented SDF model training with TensorFlow and claimed to have predicted the Poisson equation on this polygon, but the PINN prediction appears not to have been implemented; instead, random noise was added to the reference field and passed off as the PINN prediction. I may implement it later.</p>
 <p>The original author’s code implements some interesting and useful algorithms: a point-in-polygon test, the signed distance from a point to a polygon, and it uses <a href="https://srrdhy.github.io/post/20250617164213.html">Fourier feature embedding</a>.</p>
 <p>References:</p>

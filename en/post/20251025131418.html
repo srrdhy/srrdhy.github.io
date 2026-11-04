@@ -164,27 +164,27 @@
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1qbQGYPEg7/?spm_id_from=333.337.search-card.all.click&vd_source=b8ce1e24661813e17c0c1abf3b2df0ff">Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11_bilibili</a></p>
 </blockquote>
-<p>Press Win+R and type control to open Control Panel, then find Programs<br><img src="/en/img/article09/001.png"></p>
-<p>Select Turn Windows features on or off<br><img src="/en/img/article09/002.png"></p>
-<p>Turn on everything related to virtualization, including Virtual Machine Platform, Windows Hypervisor Platform and Windows Subsystem for Linux, then restart the computer for the changes to take effect.<br><img src="/en/img/article09/003.png"></p>
+<p>Press Win+R and type control to open Control Panel, then find Programs<br><img src="/img/article09/001.png"></p>
+<p>Select Turn Windows features on or off<br><img src="/img/article09/002.png"></p>
+<p>Turn on everything related to virtualization, including Virtual Machine Platform, Windows Hypervisor Platform and Windows Subsystem for Linux, then restart the computer for the changes to take effect.<br><img src="/img/article09/003.png"></p>
 <p>Press Win+R, type cmd to open a command-line window, and enter:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --update</span><br></pre></td></tr></table></figure>
 
 <p>After the update finishes, enter</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -v</span><br></pre></td></tr></table></figure>
 
-<p>to check the version and kernel information<br><img src="/en/img/article09/004.png"></p>
+<p>to check the version and kernel information<br><img src="/img/article09/004.png"></p>
 <p>If you have installed a Linux system before, you can list the installed WSL distributions</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --list --verbose</span><br></pre></td></tr></table></figure>
 
-<p><img src="/en/img/article09/005.png"></p>
+<p><img src="/img/article09/005.png"></p>
 <p>Delete the redundant Ubuntu distributions, for example</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --unregister Ubuntu-24.04</span><br></pre></td></tr></table></figure>
 <p>Once executed, all data of that Ubuntu distribution (files, configurations, installed software and so on) will be <strong>completely deleted</strong> and cannot be recovered.</p>
 <p>Enter</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --list --online</span><br></pre></td></tr></table></figure>
 
-<p>to list the Linux distributions available for installation<br><img src="/en/img/article09/006.png"></p>
+<p>to list the Linux distributions available for installation<br><img src="/img/article09/006.png"></p>
 <p>Choose the version you need and download it; here we enter</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --install Ubuntu-24.04</span><br></pre></td></tr></table></figure>
 
@@ -202,7 +202,7 @@
 <p>Confirm the system version</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/os-release</span><br></pre></td></tr></table></figure>
 
-<p><img src="/en/img/article09/007.png"></p>
+<p><img src="/img/article09/007.png"></p>
 <p>Next, use the package manager to update the Ubuntu system</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br></pre></td></tr></table></figure>
 
@@ -212,11 +212,11 @@
 <p>Run neofetch for an ASCII-art overview of the system information</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">neofetch</span><br></pre></td></tr></table></figure>
 
-<p><img src="/en/img/article09/008.png"></p>
+<p><img src="/img/article09/008.png"></p>
 <p>htop shows how the system is running</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">htop</span><br></pre></td></tr></table></figure>
 
-<p><img src="/en/img/article09/009.png"></p>
+<p><img src="/img/article09/009.png"></p>
 <p>From this we can confirm that WSL and Ubuntu work properly</p>
 <p>Install a couple of GUI applications to test them; here -y means automatically answering yes during installation</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gimp blender -y</span><br></pre></td></tr></table></figure>
@@ -224,9 +224,9 @@
 <p>When it is done, launch gimp for the first time and you will feel how extremely smoothly it loads</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gimp</span><br></pre></td></tr></table></figure>
 
-<p><img src="/en/img/article09/010.png"></p>
-<p>Not only that: when you open the Windows Start menu, you can also see the software installed in Ubuntu neatly arranged<br><img src="/en/img/article09/011.png"></p>
-<p>You can treat them exactly like Windows software, for example pinning them to the desktop and opening them directly, but they start faster inside Ubuntu<br><img src="/en/img/article09/012.png"></p>
+<p><img src="/img/article09/010.png"></p>
+<p>Not only that: when you open the Windows Start menu, you can also see the software installed in Ubuntu neatly arranged<br><img src="/img/article09/011.png"></p>
+<p>You can treat them exactly like Windows software, for example pinning them to the desktop and opening them directly, but they start faster inside Ubuntu<br><img src="/img/article09/012.png"></p>
 <p>Next, we will add an efficient graphical desktop, XFCE 4. Run the following command</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install xfce4-goodies</span><br></pre></td></tr></table></figure>
 
@@ -239,7 +239,7 @@
 <p>Use nano to edit the startup script</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
 
-<p>Modify it as follows: comment out the last two lines and add three lines<br><img src="/en/img/article09/013.png"></p>
+<p>Modify it as follows: comment out the last two lines and add three lines<br><img src="/img/article09/013.png"></p>
 <p>Press Ctrl + O to save and Ctrl + X to exit</p>
 <p>Restart xrdp again to make sure it takes effect:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/xrdp start</span><br></pre></td></tr></table></figure>
@@ -247,7 +247,7 @@
 <p>In the search bar of the Windows desktop menu, search for Remote Desktop Connection and enter</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:3390</span><br></pre></td></tr></table></figure>
 
-<p>After clicking connect, if the following bug appears:<br><img src="/en/img/article09/014.png"></p>
+<p>After clicking connect, if the following bug appears:<br><img src="/img/article09/014.png"></p>
 <p>Install ufw</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install ufw -y</span><br></pre></td></tr></table></figure>
 
@@ -264,8 +264,8 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip addr show eth0 | grep -oP &#x27;(?&lt;=inet\s)\d+(\.\d+)&#123;3&#125;&#x27;</span><br></pre></td></tr></table></figure>
 
 <p>Where it previously said localhost:3390, replace it with 172.28.156.89:3390</p>
-<p>After connecting, enter the Ubuntu username and password you set earlier and click OK<br><img src="/en/img/article09/015.png"></p>
-<p>Congratulations, you are now in the desktop environment; you can log out from the top-right corner<br><img src="/en/img/article09/016.png"></p>
+<p>After connecting, enter the Ubuntu username and password you set earlier and click OK<br><img src="/img/article09/015.png"></p>
+<p>Congratulations, you are now in the desktop environment; you can log out from the top-right corner<br><img src="/img/article09/016.png"></p>
 </article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20251025131418.html">https://srrdhy.github.io/post/20251025131418.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/WSL/">WSL</a><a class="post-meta__tags" href="/en/tags/Ubuntu/">Ubuntu</a></div><div class="post-share"><div class="social-share" data-image="/en/img/article09.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/en/post/20250617195001.html" title="SDF-PINN Signed Distance Function"><img class="cover" src="/en/img/article08.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">SDF-PINN Signed Distance Function</div></div><div class="info-2"><div class="info-item-1">SDF, the signed distance function, is a function that expresses the distance between an object’s surface and any point in space.  For points inside the object, the SDF value is positive; For points outside the object, the SDF value is negative; For points on the object’s surface, the SDF value is zero.The SDF describes an object’s geometry and boundary precisely, which makes it convenient to handle complex geometric problems.  For example, for the circular domain $\Omega = \{ \mathbf{x} :...</div></div></div></a><a class="pagination-related" href="/en/post/20251031214414.html" title="Dual-Balancing PINN Paper Reading (Part 1)"><img class="cover" src="/en/img/article10.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Dual-Balancing PINN Paper Reading (Part 1)</div></div><div class="info-2"><div class="info-item-1">Physics-Informed Neural NetworksThe core idea is to build a neural network with parameters $\theta$ that learns an approximate solution $\hat{u}_\theta (\mathbf{x}, t)$ of the PDE $$  \begin{align*} \mathcal{N}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &amp;= f(\mathbf{x}, t), \quad \mathbf{x} \in \Omega, \, t \in [0, T] \\  \mathcal{B}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &amp;= g(\mathbf{x}, t), \quad \mathbf{x} \in \partial\Omega, \, t \in [0, T] \\  u(\mathbf{x}, 0) &amp;= h(\mathbf{x}), \quad...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/en/img/favicon.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">A technical blog: notes on physics, mathematics and AI.</div><div class="site-data"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Notes on physics, mathematics and machine learning.</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"><img src="/en/img/article15.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"/></a><div class="content"><a class="title" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</a><time datetime="2026-11-04T12:24:00.000Z" title="Created 2026-11-04 20:24:00">2026-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251123112856.html" title="Jacobian Matrix"><img src="/en/img/article14.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Jacobian Matrix"/></a><div class="content"><a class="title" href="/en/post/20251123112856.html" title="Jacobian Matrix">Jacobian Matrix</a><time datetime="2025-11-23T03:28:56.000Z" title="Created 2025-11-23 11:28:56">2025-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles"><img src="/en/img/article13.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 02 - Basic Principles"/></a><div class="content"><a class="title" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles">FB-PINN Paper Reading 02 - Basic Principles</a><time datetime="2025-11-20T08:43:59.000Z" title="Created 2025-11-20 16:43:59">2025-11-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"><img src="/en/img/article12.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"/></a><div class="content"><a class="title" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints">FB-PINN Paper Reading 01 - Normalization and Hard Constraints</a><time datetime="2025-11-13T13:06:38.000Z" title="Created 2025-11-13 21:06:38">2025-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img src="/en/img/article11.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Dual-Balancing PINN Paper Reading (Part 2)"/></a><div class="content"><a class="title" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)">Dual-Balancing PINN Paper Reading (Part 2)</a><time datetime="2025-11-01T11:01:03.000Z" title="Created 2025-11-01 19:01:03">2025-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By FAVE</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><div class="js-pjax"><script>(() => {
   const loadMathjax = () => {
     if (!window.MathJax) {

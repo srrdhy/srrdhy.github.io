@@ -170,7 +170,7 @@ $$</p>
 $$<br>plus a group of condition losses, such as boundary conditions, initial conditions, and additional data.</p>
 <p>During PINN training, the weight coefficients are numbers of enormous influence that are nonetheless hard to tune. Many researchers have sought dynamic weighting methods, and the two main routes today are the learning approach and the calculating approach.</p>
 <p>The learning approach treats the weight coefficients as learnable parameters optimized together within the network; the calculating approach takes the perspective of the neural tangent kernel (NTK) and computes the weights from the ratio of gradient magnitudes $\left| \nabla_\theta \mathcal{L}^r \right| / \left| \nabla_\theta \mathcal{L}^i \right|$. DB-PINN complements GW-PINN, a concrete recipe within the existing calculating approach.</p>
-<p><img src="/en/img/article10/001.png"></p>
+<p><img src="/img/article10/001.png"></p>
 <h3 id="GW-PINN"><a href="#GW-PINN" class="headerlink" title="GW-PINN"></a>GW-PINN</h3><p>It aims at inter-balancing, as shown inside the yellow box in the figure above. Prior work has shown that the PDE residual usually dominates among the loss terms, so the weight coefficient of the residual term is now fixed to 1, and the weights of the remaining condition loss terms are adjusted during training.<br>$$
 \mathcal{G} = \sum_{i=1}^{M} \frac{\max\left\{ \left| \nabla_\theta \mathcal{L}^r \right| \right\}}{\left| \nabla_\theta \lambda^i \mathcal{L}^i \right|}
 $$</p>
