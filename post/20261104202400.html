@@ -184,14 +184,13 @@ $$</p>
 $$</p>
 <p>四个特征通道都被压在 $[-1,1]$ 内，处于 <code>Tanh</code> 激活函数导数最大、最灵敏的近线性区间，可防止神经元过早进入平坦饱和区引发梯度消失。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">7</span>)</span><br><span class="line">torch.set_num_threads(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">initial_color</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">1</span> + torch.sin(<span class="number">2</span> * math.pi * x)) / <span class="number">2</span></span><br><span class="line"></span><br><span class="line">net = nn.Sequential(</span><br><span class="line">    nn.Linear(<span class="number">4</span>, <span class="number">32</span>), nn.Tanh(),</span><br><span class="line">    nn.Linear(<span class="number">32</span>, <span class="number">32</span>), nn.Tanh(),</span><br><span class="line">    nn.Linear(<span class="number">32</span>, <span class="number">1</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">x, t, c</span>):</span><br><span class="line">    angle = <span class="number">2</span> * math.pi * x</span><br><span class="line">    inputs = torch.cat([torch.cos(angle), torch.sin(angle), <span class="number">4</span> * t - <span class="number">1</span>, (c - <span class="number">0.6</span>) / <span class="number">0.4</span>], dim=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> net(inputs)</span><br></pre></td></tr></table></figure>
-
 <h3 id="网络训练"><a href="#网络训练" class="headerlink" title="网络训练"></a>网络训练</h3><p>每一步按均匀分布随机抽取 $x, t, c$，由自动微分算出 PDE 残差，再单独抽一批点约束 $t=0$ 处的初始图案，并给初始损失 4 倍权重：</p>
 <p>$$
 \mathcal{L} = \underbrace{\frac{1}{N}\sum_i \left(\hat{u}_t + c \hat{u}_x\right)^2}_{\text{方程误差}} + 4 \underbrace{\frac{1}{N}\sum_j \left(\hat{u}(x_j,0,c_j)-\frac{1+\sin(2\pi x_j)}{2}\right)^2}_{\text{初始误差}}
 $$</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.Adam(net.parameters(), lr=<span class="number">0.002</span>)</span><br><span class="line">n = <span class="number">128</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">5001</span>):</span><br><span class="line">    x = torch.rand(n, <span class="number">1</span>).requires_grad_()</span><br><span class="line">    t = (<span class="number">0.5</span> * torch.rand(n, <span class="number">1</span>)).requires_grad_()</span><br><span class="line">    c = <span class="number">0.2</span> + <span class="number">0.8</span> * torch.rand(n, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    u = predict(x, t, c)</span><br><span class="line">    u_x, u_t = torch.autograd.grad(u.<span class="built_in">sum</span>(), (x, t), create_graph=<span class="literal">True</span>)</span><br><span class="line">    loss_pde = (u_t + c * u_x).square().mean()</span><br><span class="line"></span><br><span class="line">    x0 = torch.rand(n, <span class="number">1</span>)</span><br><span class="line">    u_start = predict(x0, torch.zeros_like(x0), c)</span><br><span class="line">    loss_initial = (u_start - initial_color(x0)).square().mean()</span><br><span class="line"></span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line">    (loss_pde + <span class="number">4</span> * loss_initial).backward()</span><br><span class="line">    optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> step <span class="keyword">in</span> (<span class="number">1</span>, <span class="number">2500</span>, <span class="number">5000</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;第 <span class="subst">&#123;step:4d&#125;</span> 步  方程误差 <span class="subst">&#123;loss_pde.item():<span class="number">.2</span>e&#125;</span>  初始误差 <span class="subst">&#123;loss_initial.item():<span class="number">.2</span>e&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
-
 <p>运行输出：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -200,7 +199,8 @@ $$</p>
 <th>初始误差</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>3.10e-02</td>
 <td>2.04e-01</td>
@@ -215,12 +215,14 @@ $$</p>
 <td>8.64e-04</td>
 <td>5.88e-05</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h3 id="预测与可视化"><a href="#预测与可视化" class="headerlink" title="预测与可视化"></a>预测与可视化</h3><p>固定 $t=0.5$ s，让同一个网络依次预测 7 个波速下的颜色曲线，并与解析解 $u_0(x-ct)$ 对照。由于 $c$ 只是一列输入，换波速不需要重新训练：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">speeds = [<span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>]</span><br><span class="line">x_plot = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">201</span>).reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">t_plot = torch.full_like(x_plot, <span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">fig, ax = plt.subplots(figsize=(<span class="number">7.2</span>, <span class="number">4.0</span>), constrained_layout=<span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;带速    预测峰位(m)  手算峰位(m)   颜色平均绝对误差&quot;</span>)</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="keyword">for</span> speed <span class="keyword">in</span> speeds:</span><br><span class="line">        c_plot = torch.full_like(x_plot, speed)</span><br><span class="line">        fitted = predict(x_plot, t_plot, c_plot)</span><br><span class="line">        exact = initial_color(x_plot - c_plot * t_plot)</span><br><span class="line">        ax.plot(x_plot[:, <span class="number">0</span>], fitted[:, <span class="number">0</span>], lw=<span class="number">2.6</span>, label=<span class="string">f&quot;c = <span class="subst">&#123;speed:g&#125;</span>&quot;</span>)</span><br><span class="line">        ax.plot(x_plot[:, <span class="number">0</span>], exact[:, <span class="number">0</span>], <span class="string">&quot;--&quot;</span>, color=<span class="string">&quot;black&quot;</span>, lw=<span class="number">1</span>)</span><br><span class="line">        peak = x_plot[fitted.argmax()].item()</span><br><span class="line">        mae = (fitted - exact).<span class="built_in">abs</span>().mean().item()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;speed:<span class="number">4.1</span>f&#125;</span>       <span class="subst">&#123;peak:<span class="number">.3</span>f&#125;</span>        <span class="subst">&#123;(<span class="number">0.25</span> + speed * <span class="number">0.5</span>) % <span class="number">1</span>:<span class="number">.3</span>f&#125;</span>          <span class="subst">&#123;mae:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">ax.plot([], [], <span class="string">&quot;--&quot;</span>, color=<span class="string">&quot;black&quot;</span>, lw=<span class="number">1</span>, label=<span class="string">&quot;Exact&quot;</span>)</span><br><span class="line">ax.<span class="built_in">set</span>(xlabel=<span class="string">&quot;x (m)&quot;</span>, ylabel=<span class="string">&quot;u&quot;</span>, title=<span class="string">&quot;t = 0.5 s&quot;</span>, xlim=(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">ax.legend(loc=<span class="string">&quot;upper center&quot;</span>, bbox_to_anchor=(<span class="number">0.5</span>, -<span class="number">0.18</span>), ncol=<span class="number">4</span>, frameon=<span class="literal">False</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-
-<p><img src="/img/article15/001.png" alt="随机采样训练：t&#x3D;0.5 s 时 7 个波速的预测曲线与解析解"></p>
+<p><img src="/img/article15/001.png" alt="随机采样训练：t=0.5 s 时 7 个波速的预测曲线与解析解"></p>
 <p><em>实线为网络预测，黑色虚线为解析解；波速越大，峰值越靠右。</em></p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -230,7 +232,8 @@ $$</p>
 <th>颜色平均绝对误差</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>0.3</td>
 <td>0.400</td>
 <td>0.400</td>
@@ -272,11 +275,12 @@ $$</p>
 <td>0.700</td>
 <td>0.0072</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>峰位误差不超过 0.005 m，整条曲线的平均绝对误差稳定在 $6\times10^{-3}$ 量级，与网络 32 个隐单元的表达能力相称。</p>
 <h3 id="手动选取测试点"><a href="#手动选取测试点" class="headerlink" title="手动选取测试点"></a>手动选取测试点</h3><p>换一个具体点核对：$c=0.4$、$t=0.5$ s、$x=0.25$ m。半秒内色点移动了 $c t=0.20$ m，所以这里的颜色应当接近起点 $x=0.05$ m 的值：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">speed = <span class="number">0.4</span></span><br><span class="line">time = <span class="number">0.5</span></span><br><span class="line">position = <span class="number">0.25</span>    </span><br><span class="line">x = torch.tensor([[position]])</span><br><span class="line">t = torch.tensor([[time]])</span><br><span class="line">c = torch.tensor([[speed]])</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;网络预测 <span class="subst">&#123;predict(x, t, c).item():<span class="number">.4</span>f&#125;</span>，手算颜色 <span class="subst">&#123;initial_color(x - c*t).item():<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
-
 <p>输出：</p>
 <blockquote>
 <p>网络预测 0.6556，手算颜色 0.6545</p>
@@ -284,8 +288,8 @@ $$</p>
 <p>相对误差约 0.17%，量级与上表的平均误差一致。</p>
 <h3 id="规则网格采样对比"><a href="#规则网格采样对比" class="headerlink" title="规则网格采样对比"></a>规则网格采样对比</h3><p>把随机采样换成固定的均匀网格，配置点数保持不变（$8\times4\times4=128$）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.Adam(net.parameters(), lr=<span class="number">0.002</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 1. 预先构建三维均匀网格配置点 (PDE) ====================</span></span><br><span class="line"><span class="comment"># 点数分解: 8 * 4 * 4 = 128</span></span><br><span class="line">Nx, Nt, Nc = <span class="number">8</span>, <span class="number">4</span>, <span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># x 在 [0, 1) 半开区间等间距划分（因周期性边界下 x=0 与 x=1 等价，避免端点重合）</span></span><br><span class="line">x_1d = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, Nx + <span class="number">1</span>)[:-<span class="number">1</span>]</span><br><span class="line"><span class="comment"># t 在 [0, 0.5] 闭区间等间距划分</span></span><br><span class="line">t_1d = torch.linspace(<span class="number">0</span>, <span class="number">0.5</span>, Nt)</span><br><span class="line"><span class="comment"># c 在 [0.2, 1.0] 闭区间等间距划分</span></span><br><span class="line">c_1d = torch.linspace(<span class="number">0.2</span>, <span class="number">1.0</span>, Nc)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成 Cartesian 网格并展平为 (128, 1)</span></span><br><span class="line">grid_x, grid_t, grid_c = torch.meshgrid(x_1d, t_1d, c_1d, indexing=<span class="string">&quot;ij&quot;</span>)</span><br><span class="line">x_grid = grid_x.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">t_grid = grid_t.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">c_grid = grid_c.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 2. 预先构建二维初值均匀网格 (Initial) ====================</span></span><br><span class="line"><span class="comment"># 点数分解: 16 * 8 = 128</span></span><br><span class="line">Nx0, Nc0 = <span class="number">16</span>, <span class="number">8</span></span><br><span class="line">x0_1d = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, Nx0 + <span class="number">1</span>)[:-<span class="number">1</span>]</span><br><span class="line">c0_1d = torch.linspace(<span class="number">0.2</span>, <span class="number">1.0</span>, Nc0)</span><br><span class="line"></span><br><span class="line">grid_x0, grid_c0 = torch.meshgrid(x0_1d, c0_1d, indexing=<span class="string">&quot;ij&quot;</span>)</span><br><span class="line">x0_grid = grid_x0.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">c0_grid = grid_c0.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">t0_grid = torch.zeros_like(x0_grid)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 3. 训练循环 ====================</span></span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">5001</span>):</span><br><span class="line">    <span class="comment"># 拷贝固定网格并开启梯度追踪</span></span><br><span class="line">    x = x_grid.clone().requires_grad_()</span><br><span class="line">    t = t_grid.clone().requires_grad_()</span><br><span class="line">    c = c_grid</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算 PDE 损失</span></span><br><span class="line">    u = predict(x, t, c)</span><br><span class="line">    u_x, u_t = torch.autograd.grad(u.<span class="built_in">sum</span>(), (x, t), create_graph=<span class="literal">True</span>)</span><br><span class="line">    loss_pde = (u_t + c * u_x).square().mean()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算初始条件损失 (t = 0)</span></span><br><span class="line">    u_start = predict(x0_grid, t0_grid, c0_grid)</span><br><span class="line">    loss_initial = (u_start - initial_color(x0_grid)).square().mean()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 反向传播与参数更新</span></span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line">    (loss_pde + <span class="number">4</span> * loss_initial).backward()</span><br><span class="line">    optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> step <span class="keyword">in</span> (<span class="number">1</span>, <span class="number">2500</span>, <span class="number">5000</span>):</span><br><span class="line">        <span class="built_in">print</span>(</span><br><span class="line">            <span class="string">f&quot;第 <span class="subst">&#123;step:4d&#125;</span> 步   方程误差 <span class="subst">&#123;loss_pde.item():<span class="number">.2</span>e&#125;</span>   初始误差 <span class="subst">&#123;loss_initial.item():<span class="number">.2</span>e&#125;</span>&quot;</span></span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
-
 <p>运行输出：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -294,7 +298,8 @@ $$</p>
 <th>初始误差</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>8.00e-03</td>
 <td>8.03e-05</td>
@@ -309,10 +314,13 @@ $$</p>
 <td>2.10e-05</td>
 <td>7.05e-06</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>同样预测并可视化：</p>
 <p><img src="/img/article15/002.png" alt="固定网格训练：同一组 128 个配点反复优化后的预测曲线"></p>
 <p><em>网格模型在训练点上拟合得更“紧”，曲线却更早偏离解析解。</em></p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -322,7 +330,8 @@ $$</p>
 <th>颜色平均绝对误差</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>0.3</td>
 <td>0.400</td>
 <td>0.400</td>
@@ -364,7 +373,9 @@ $$</p>
 <td>0.700</td>
 <td>0.0106</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>两种做法的对比很有意思：固定网格的<strong>训练损失</strong>低了将近两个数量级，但测试的平均绝对误差反而更大（多数波速下约为随机采样的 2 倍）。</p>
 <h3 id="固定网格为什么更差：经验风险与真实风险"><a href="#固定网格为什么更差：经验风险与真实风险" class="headerlink" title="固定网格为什么更差：经验风险与真实风险"></a>固定网格为什么更差：经验风险与真实风险</h3><p>PINN 求解偏微分方程的终极目标，是最小化整个连续域上的<strong>期望风险</strong>：</p>
 <p>$$
