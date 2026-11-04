@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>2. Implementing the Inverse Discrete Fourier Transform in Python | A Digital Homestead — DIY Knowledge Base</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="In the previous article, we implemented the discrete Fourier transform (DFT) in Python. In this article, let’s look at the inverse process: converting a vector of frequency values into a vector of tim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2. Implementing the Inverse Discrete Fourier Transform in Python">
+<meta property="og:url" content="https://srrdhy.github.io/post/20250609164012.html">
+<meta property="og:site_name" content="A Digital Homestead — DIY Knowledge Base">
+<meta property="og:description" content="In the previous article, we implemented the discrete Fourier transform (DFT) in Python. In this article, let’s look at the inverse process: converting a vector of frequency values into a vector of tim">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://srrdhy.github.io/img/article03.jpg">
+<meta property="article:published_time" content="2025-06-09T08:40:12.000Z">
+<meta property="article:modified_time" content="2026-11-04T12:50:01.616Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="Python-Fourier">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article03.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "2. Implementing the Inverse Discrete Fourier Transform in Python",
+  "url": "https://srrdhy.github.io/post/20250609164012.html",
+  "image": "https://srrdhy.github.io/img/article03.jpg",
+  "datePublished": "2025-06-09T08:40:12.000Z",
+  "dateModified": "2026-11-04T12:50:01.616Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/en/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20250609164012.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/en/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/en/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '2. Implementing the Inverse Discrete Fourier Transform in Python',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><script src="/js/lang-switch.js" defer></script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article03.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/en/"><span class="site-name">A Digital Homestead — DIY Knowledge Base</span></a><a class="nav-page-title" href="/en/"><span class="site-name">2. Implementing the Inverse Discrete Fourier Transform in Python</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">2. Implementing the Inverse Discrete Fourier Transform in Python</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-06-09T08:40:12.000Z" title="Created 2025-06-09 16:40:12">2025-06-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-11-04T12:50:01.616Z" title="Updated 2026-11-04 20:50:01">2026-11-04</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>In the previous article, we implemented the discrete Fourier transform (DFT) in Python.</p>
+<p>In this article, let’s look at the inverse process: converting a vector of frequency values into a vector of time values.</p>
+<p>Mathematically, the inverse discrete Fourier transform (IDFT) is given by:</p>
+<p>$$x[n]=\frac{1}{N}\sum_{k=0}^{N-1}X[k]\cdot e^{i2\pi\frac{k}{N}n}$$<br>where:</p>
+<ul>
+<li>$N$ is the number of samples</li>
+<li>$n$ is the index of the current sample</li>
+<li>$k$ is the current frequency</li>
+<li>$X[k]$ is the DFT at $n$</li>
+<li>$x[n]$ is the iDFT at $n$</li>
+</ul>
+<p>Since the matrix of the discrete Fourier transform is square and invertible, the inverse transform is feasible. Ideally, we should be able to recover our original noisy signal.</p>
+<p>Setup:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">rate = <span class="number">100</span> <span class="comment"># rate is the sampling rate (samples per second, unit: Hz)</span></span><br><span class="line">interval = <span class="number">1</span> / rate</span><br><span class="line"></span><br><span class="line">t_start = <span class="number">0</span></span><br><span class="line">t_end = <span class="number">1</span></span><br><span class="line">t = np.arange(t_start, t_end, interval) <span class="comment"># (0, 1, 1/100)  time samples</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">getSineSignal</span>(<span class="params">amps, freqs, t</span>):  <span class="comment"># function that takes arrays of amplitudes and frequencies and generates a combined signal</span></span><br><span class="line">    x = np.zeros_like(t)</span><br><span class="line">    <span class="keyword">for</span> a, f <span class="keyword">in</span> <span class="built_in">zip</span>(amps, freqs): </span><br><span class="line">        x += a * np.sin(<span class="number">2</span> * np.pi * f * t)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">amps = np.array([<span class="number">9</span>, <span class="number">10</span>, <span class="number">2.3</span>])</span><br><span class="line">freqs = np.array([<span class="number">2</span>, <span class="number">1</span>, <span class="number">10</span>])</span><br><span class="line">x = getSineSignal(amps, freqs, t)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">DFT</span>(<span class="params">x</span>):</span><br><span class="line">    N = x.size</span><br><span class="line">    n = np.arange(N)</span><br><span class="line">    k = n.reshape((N, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    e = np.exp(-<span class="number">2j</span> * np.pi * k * n / N)</span><br><span class="line">    X_k = np.dot(e, x)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> X_k</span><br><span class="line"></span><br><span class="line">X_k = DFT(x)</span><br><span class="line">N = X_k.size</span><br><span class="line">n = np.arange(N)</span><br><span class="line">T = N / rate</span><br><span class="line">freq = n / T</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line">plt.stem(freq, <span class="built_in">abs</span>(X_k), <span class="string">&#x27;b&#x27;</span>, markerfmt=<span class="string">&#x27; &#x27;</span>, basefmt=<span class="string">&#x27;-b&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">r&#x27;$\omega$ &#x27;</span>+<span class="string">&#x27;(Hz)&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;DFT Amplitude &#x27;</span>+<span class="string">r&#x27;$|X(\omega)|$&#x27;</span>)</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article03/001.png"></p>
+<p>The DFT function returned a vector of complex numbers, containing the magnitude and phase at each frequency. We call this vector X_K.</p>
+<p>Now we will use X_K to recover our original signal.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">iDFT</span>(<span class="params">X_k</span>):</span><br><span class="line">    N = X_k.size</span><br><span class="line">    n = np.arange(N)</span><br><span class="line">    k = n.reshape((N,<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    e = np.exp(<span class="number">2j</span> * np.pi * k * n / N)</span><br><span class="line">    x = np.zeros_like(X_k)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> <span class="built_in">range</span>(N):</span><br><span class="line">        <span class="keyword">for</span> col <span class="keyword">in</span> <span class="built_in">range</span>(N):</span><br><span class="line">            x[row] += e[row, col] * X_k[col]</span><br><span class="line">    x /= N</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> x.real <span class="comment"># when plotting the signal, we are only interested in the real part of the complex number</span></span><br></pre></td></tr></table></figure>
+
+<p>Aside: taking the real and imaginary parts of a complex number</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">z1 = <span class="number">3</span>+<span class="number">4j</span></span><br><span class="line"><span class="built_in">print</span>(z1.real) <span class="comment"># 3.0</span></span><br><span class="line"><span class="built_in">print</span>(z1.imag) <span class="comment"># 4.0</span></span><br></pre></td></tr></table></figure>
+
+<p>Reconstruct the signal and compare it with the original signal.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">inv_x = iDFT(X_k)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize = (<span class="number">14</span>, <span class="number">5</span>))</span><br><span class="line">plt.subplot(<span class="number">121</span>)</span><br><span class="line">plt.plot(t, x, <span class="string">&#x27;b&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;t&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;x&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;Original Signal&#x27;</span>)</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.subplot(<span class="number">122</span>)</span><br><span class="line">plt.plot(t, inv_x, <span class="string">&#x27;r&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;t&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;x&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;Reconstructed Signal&#x27;</span>)</span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article03/002.png"></p>
+<p>Of course, we have a clean signal. That makes the reconstruction process much easier.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">plt.figure(figsize = (<span class="number">7</span>, <span class="number">5</span>))</span><br><span class="line">plt.plot(t, x, <span class="string">&#x27;b&#x27;</span>, label=<span class="string">&#x27;Original Signal&#x27;</span>)</span><br><span class="line">plt.plot(t, inv_x, <span class="string">&#x27;r--&#x27;</span>, linewidth=<span class="number">2</span>, label=<span class="string">&#x27;Reconstructed Signal&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;t&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;x&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;Original and Reconstructed Signals&#x27;</span>)</span><br><span class="line">plt.grid(<span class="literal">True</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article03/003.png"></p>
+<p>Improvement:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Loops are slow. So let’s vectorize the iDFT function.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">viDFT</span>(<span class="params">X_k</span>):</span><br><span class="line">    N = X_k.size</span><br><span class="line">    n = np.arange(N)</span><br><span class="line">    k = n.reshape((N,<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    e = np.exp(<span class="number">2j</span> * np.pi * k * n / N)</span><br><span class="line">    x = np.dot(e, X_k) / N</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> x.real</span><br></pre></td></tr></table></figure>
+
+<p>As before, the vectorized function is 10 times faster.</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20250609164012.html">https://srrdhy.github.io/post/20250609164012.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/Python-Fourier/">Python-Fourier</a></div><div class="post-share"><div class="social-share" data-image="/en/img/article03.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/en/post/20250609110500.html" title="1. Implementing the Discrete Fourier Transform in Python"><img class="cover" src="/en/img/article02.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">1. Implementing the Discrete Fourier Transform in Python</div></div><div class="info-2"><div class="info-item-1">While working with recorded videos, I noticed background noise. How do we remove it from the audio? We need to identify the frequency of the noise and then filter it out. How do we determine the frequency? The answer is the Fourier frequency. Decompose the signal into sine waves and cosine waves; we can then identify the amplitude, frequency and phase of each wave, and by plotting each frequency we can isolate the amplitudes that contribute most to the signal.  The Fourier transform of a...</div></div></div></a><a class="pagination-related" href="/en/post/20250609175112.html" title="3. Implementing the Fast Fourier Transform (FFT) in Python"><img class="cover" src="/en/img/article04.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">3. Implementing the Fast Fourier Transform (FFT) in Python</div></div><div class="info-2"><div class="info-item-1">The solution that speeds up the Fourier transform is called the Cooley-Tukey algorithm, which relies on 2 key improvements. Improvement 1 — The Divide-and-Conquer MethodThe DFT equation is:$$X[k]=\sum_{n=0}^{N-1}x[n]e^{-i2\pi\frac{k}{N}n}$$where $k$ ranges from $0$ to $N-1$ Let us split it into 2 halves, the even indices $n=2m$ and the odd indices $n=2m+1$$$X_k = \sum_{m=0}^{N/2 - 1} x_{2m} e^{-\frac{2\pi i}{N} (2m) k} + \sum_{m=0}^{N/2 - 1} x_{2m + 1} e^{-\frac{2\pi i}{N} (2m + 1)...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/en/post/20250609110500.html" title="1. Implementing the Discrete Fourier Transform in Python"><img class="cover" src="/en/img/article02.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-09</div><div class="info-item-2">1. Implementing the Discrete Fourier Transform in Python</div></div><div class="info-2"><div class="info-item-1">While working with recorded videos, I noticed background noise. How do we remove it from the audio? We need to identify the frequency of the noise and then filter it out. How do we determine the frequency? The answer is the Fourier frequency. Decompose the signal into sine waves and cosine waves; we can then identify the amplitude, frequency and phase of each wave, and by plotting each frequency we can isolate the amplitudes that contribute most to the signal.  The Fourier transform of a...</div></div></div></a><a class="pagination-related" href="/en/post/20250609175112.html" title="3. Implementing the Fast Fourier Transform (FFT) in Python"><img class="cover" src="/en/img/article04.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-09</div><div class="info-item-2">3. Implementing the Fast Fourier Transform (FFT) in Python</div></div><div class="info-2"><div class="info-item-1">The solution that speeds up the Fourier transform is called the Cooley-Tukey algorithm, which relies on 2 key improvements. Improvement 1 — The Divide-and-Conquer MethodThe DFT equation is:$$X[k]=\sum_{n=0}^{N-1}x[n]e^{-i2\pi\frac{k}{N}n}$$where $k$ ranges from $0$ to $N-1$ Let us split it into 2 halves, the even indices $n=2m$ and the odd indices $n=2m+1$$$X_k = \sum_{m=0}^{N/2 - 1} x_{2m} e^{-\frac{2\pi i}{N} (2m) k} + \sum_{m=0}^{N/2 - 1} x_{2m + 1} e^{-\frac{2\pi i}{N} (2m + 1)...</div></div></div></a><a class="pagination-related" href="/en/post/20250609181412.html" title="4. Using fft from the Scipy Library"><img class="cover" src="/en/img/article05.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-09</div><div class="info-item-2">4. Using fft from the Scipy Library</div></div><div class="info-2"><div class="info-item-1">In practice, an fft function we write ourselves will never match a purpose-built, optimized library, so here we use scipy. 123import numpy as npimport matplotlib.pyplot as pltfrom scipy import fft  Let’s prepare some data: 1234567891011121314151617181920212223rate = 100 # rate is the sampling rate (number of samples per second, unit: Hz)interval = 1 / ratet_start = 0t_end = 1t = np.arange(t_start, t_end, interval) # (0, 1, 1/100)  time samplingdef getSineSignal(amps, freqs, t):  # function...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/en/img/favicon.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">A technical blog: notes on physics, mathematics and AI.</div><div class="site-data"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Notes on physics, mathematics and machine learning.</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"><img src="/en/img/article15.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"/></a><div class="content"><a class="title" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</a><time datetime="2026-11-04T12:24:00.000Z" title="Created 2026-11-04 20:24:00">2026-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251123112856.html" title="Jacobian Matrix"><img src="/en/img/article14.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Jacobian Matrix"/></a><div class="content"><a class="title" href="/en/post/20251123112856.html" title="Jacobian Matrix">Jacobian Matrix</a><time datetime="2025-11-23T03:28:56.000Z" title="Created 2025-11-23 11:28:56">2025-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles"><img src="/en/img/article13.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 02 - Basic Principles"/></a><div class="content"><a class="title" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles">FB-PINN Paper Reading 02 - Basic Principles</a><time datetime="2025-11-20T08:43:59.000Z" title="Created 2025-11-20 16:43:59">2025-11-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"><img src="/en/img/article12.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"/></a><div class="content"><a class="title" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints">FB-PINN Paper Reading 01 - Normalization and Hard Constraints</a><time datetime="2025-11-13T13:06:38.000Z" title="Created 2025-11-13 21:06:38">2025-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img src="/en/img/article11.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Dual-Balancing PINN Paper Reading (Part 2)"/></a><div class="content"><a class="title" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)">Dual-Balancing PINN Paper Reading (Part 2)</a><time datetime="2025-11-01T11:01:03.000Z" title="Created 2025-11-01 19:01:03">2025-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By FAVE</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

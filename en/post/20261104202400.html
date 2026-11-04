@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Parametric PINN: One Moving Color Band, a Whole Family of Solutions | A Digital Homestead — DIY Knowledge Base</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Treat the wave speed c of the transport equation as a network input and hard-constrain the periodic boundary via a coordinate mapping, so a single training run covers the entire family of solutions; i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Parametric PINN: One Moving Color Band, a Whole Family of Solutions">
+<meta property="og:url" content="https://srrdhy.github.io/post/20261104202400.html">
+<meta property="og:site_name" content="A Digital Homestead — DIY Knowledge Base">
+<meta property="og:description" content="Treat the wave speed c of the transport equation as a network input and hard-constrain the periodic boundary via a coordinate mapping, so a single training run covers the entire family of solutions; i">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://srrdhy.github.io/img/article15.jpg">
+<meta property="article:published_time" content="2026-11-04T12:24:00.000Z">
+<meta property="article:modified_time" content="2026-11-04T12:53:52.554Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="Parametric PINN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article15.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Parametric PINN: One Moving Color Band, a Whole Family of Solutions",
+  "url": "https://srrdhy.github.io/post/20261104202400.html",
+  "image": "https://srrdhy.github.io/img/article15.jpg",
+  "datePublished": "2026-11-04T12:24:00.000Z",
+  "dateModified": "2026-11-04T12:53:52.554Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/en/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20261104202400.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/en/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/en/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Parametric PINN: One Moving Color Band, a Whole Family of Solutions',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><script src="/js/lang-switch.js" defer></script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article15.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/en/"><span class="site-name">A Digital Homestead — DIY Knowledge Base</span></a><a class="nav-page-title" href="/en/"><span class="site-name">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-11-04T12:24:00.000Z" title="Created 2026-11-04 20:24:00">2026-11-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-11-04T12:53:52.554Z" title="Updated 2026-11-04 20:53:52">2026-11-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/en/categories/PINN/">PINN</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>A conveyor belt whose ends meet, one meter in circumference, its surface mottled with light and dark patches. This minimal example treats the wave speed $c$ in the transport equation as an input to the network too: train once, and you can query the solution at any wave speed, instead of training a separate network for each $c$. The periodic boundary is hard-constrained by a coordinate mapping, which spares us an extra penalty term.</p>
+<h3 id="The-Governing-Equation"><a href="#The-Governing-Equation" class="headerlink" title="The Governing Equation"></a>The Governing Equation</h3><p>Take the one-dimensional transport equation:</p>
+<p>$$
+\frac{\partial u}{\partial t}+c \frac{\partial u}{\partial x}=0.
+$$</p>
+<p>Its initial condition is $u(x,0)=u_0(x)=[1+\sin(2\pi x)]/2$, and the periodic boundary is $u(0,t)=u(1,t)$.</p>
+<p>Take $0\le x\le 1.0$, $0\le t\le 0.5$, $0.2\le c\le 1.0$. The reference solution for this family of problems can be worked out by hand: $u_c(x,t)=u_0(x-ct)$ — the color pattern simply translates along with the belt, its shape unchanged.</p>
+<p>The point of this example is <strong>feeding $c$ into the network</strong>: $x,t,c$ are all inputs, and the network learns the entire family of solutions $u(x,t;c)$, not merely a single “film”.</p>
+<h3 id="Network-Construction"><a href="#Network-Construction" class="headerlink" title="Network Construction"></a>Network Construction</h3><p>Map the one-dimensional spatial coordinate $x\in[0,1]$ onto the two-dimensional unit circle: $x \mapsto \big(\cos(2\pi x), \sin(2\pi x)\big)$, thereby building a <strong>hard-constrained periodic boundary condition (Hard-constrained Periodic BC)</strong>:</p>
+<p>$$
+\cos(2\pi \times 0) = \cos(2\pi \times 1) = 1, \quad \sin(2\pi \times 0) = \sin(2\pi \times 1) = 0
+$$</p>
+<p>The input features coincide exactly at $x=0$ and $x=1$, so the network output satisfies periodicity strictly by construction:</p>
+<p>$$
+\hat{u}(0, t, c) \equiv \hat{u}(1, t, c)
+$$</p>
+<p>This removes the need to add an extra periodic-boundary penalty term to the loss.</p>
+<p>Time variable normalization: <code>4 * t - 1</code>, mapping $t\in[0,0.5]$ linearly onto $[-1,1]$.</p>
+<p>Parametrized transport speed normalization: <code>(c - 0.6) / 0.4</code>, centering $c\in[0.2,1.0]$ and scaling it onto $[-1,1]$ before feeding it to the network as an input feature.</p>
+<p>The four feature channels are therefore:</p>
+<p>$$
+\mathbf{X}_{\text{in}} = \begin{bmatrix} \cos(2\pi x) &amp; \sin(2\pi x) &amp; \tilde{t} &amp; \tilde{c} \end{bmatrix}
+$$</p>
+<p>All four feature channels are squeezed into $[-1,1]$, the near-linear region where the derivative of the <code>Tanh</code> activation is largest and the unit is most sensitive, which keeps neurons from entering the flat saturation region too early and causing vanishing gradients.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">7</span>)</span><br><span class="line">torch.set_num_threads(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">initial_color</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">1</span> + torch.sin(<span class="number">2</span> * math.pi * x)) / <span class="number">2</span></span><br><span class="line"></span><br><span class="line">net = nn.Sequential(</span><br><span class="line">    nn.Linear(<span class="number">4</span>, <span class="number">32</span>), nn.Tanh(),</span><br><span class="line">    nn.Linear(<span class="number">32</span>, <span class="number">32</span>), nn.Tanh(),</span><br><span class="line">    nn.Linear(<span class="number">32</span>, <span class="number">1</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">x, t, c</span>):</span><br><span class="line">    angle = <span class="number">2</span> * math.pi * x</span><br><span class="line">    inputs = torch.cat([torch.cos(angle), torch.sin(angle), <span class="number">4</span> * t - <span class="number">1</span>, (c - <span class="number">0.6</span>) / <span class="number">0.4</span>], dim=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> net(inputs)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Network-Training"><a href="#Network-Training" class="headerlink" title="Network Training"></a>Network Training</h3><p>At each step, $x, t, c$ are drawn at random from a uniform distribution, the PDE residual is computed by automatic differentiation, and then a separate batch of points constrains the initial pattern at $t=0$, with the initial loss given 4 times the weight:</p>
+<p>$$
+\mathcal{L} = \underbrace{\frac{1}{N}\sum_i \left(\hat{u}_t + c \hat{u}_x\right)^2}_{\text{equation error}} + 4 \underbrace{\frac{1}{N}\sum_j \left(\hat{u}(x_j,0,c_j)-\frac{1+\sin(2\pi x_j)}{2}\right)^2}_{\text{initial error}}
+$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.Adam(net.parameters(), lr=<span class="number">0.002</span>)</span><br><span class="line">n = <span class="number">128</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">5001</span>):</span><br><span class="line">    x = torch.rand(n, <span class="number">1</span>).requires_grad_()</span><br><span class="line">    t = (<span class="number">0.5</span> * torch.rand(n, <span class="number">1</span>)).requires_grad_()</span><br><span class="line">    c = <span class="number">0.2</span> + <span class="number">0.8</span> * torch.rand(n, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    u = predict(x, t, c)</span><br><span class="line">    u_x, u_t = torch.autograd.grad(u.<span class="built_in">sum</span>(), (x, t), create_graph=<span class="literal">True</span>)</span><br><span class="line">    loss_pde = (u_t + c * u_x).square().mean()</span><br><span class="line"></span><br><span class="line">    x0 = torch.rand(n, <span class="number">1</span>)</span><br><span class="line">    u_start = predict(x0, torch.zeros_like(x0), c)</span><br><span class="line">    loss_initial = (u_start - initial_color(x0)).square().mean()</span><br><span class="line"></span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line">    (loss_pde + <span class="number">4</span> * loss_initial).backward()</span><br><span class="line">    optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> step <span class="keyword">in</span> (<span class="number">1</span>, <span class="number">2500</span>, <span class="number">5000</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Step <span class="subst">&#123;step:4d&#125;</span>  equation error <span class="subst">&#123;loss_pde.item():<span class="number">.2</span>e&#125;</span>  initial error <span class="subst">&#123;loss_initial.item():<span class="number">.2</span>e&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Run output:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Equation error</th>
+<th>Initial error</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>3.10e-02</td>
+<td>2.04e-01</td>
+</tr>
+<tr>
+<td>2500</td>
+<td>2.47e-03</td>
+<td>1.30e-04</td>
+</tr>
+<tr>
+<td>5000</td>
+<td>8.64e-04</td>
+<td>5.88e-05</td>
+</tr>
+</tbody></table>
+<h3 id="Prediction-and-Visualization"><a href="#Prediction-and-Visualization" class="headerlink" title="Prediction and Visualization"></a>Prediction and Visualization</h3><p>Fix $t=0.5$ s and let the same network predict the color profile at 7 wave speeds in turn, comparing each against the analytical solution $u_0(x-ct)$. Since $c$ is just one input column, changing the wave speed requires no retraining:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">speeds = [<span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>]</span><br><span class="line">x_plot = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">201</span>).reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">t_plot = torch.full_like(x_plot, <span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">fig, ax = plt.subplots(figsize=(<span class="number">7.2</span>, <span class="number">4.0</span>), constrained_layout=<span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Belt speed  Predicted peak (m)  Analytic peak (m)   Mean absolute color error&quot;</span>)</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="keyword">for</span> speed <span class="keyword">in</span> speeds:</span><br><span class="line">        c_plot = torch.full_like(x_plot, speed)</span><br><span class="line">        fitted = predict(x_plot, t_plot, c_plot)</span><br><span class="line">        exact = initial_color(x_plot - c_plot * t_plot)</span><br><span class="line">        ax.plot(x_plot[:, <span class="number">0</span>], fitted[:, <span class="number">0</span>], lw=<span class="number">2.6</span>, label=<span class="string">f&quot;c = <span class="subst">&#123;speed:g&#125;</span>&quot;</span>)</span><br><span class="line">        ax.plot(x_plot[:, <span class="number">0</span>], exact[:, <span class="number">0</span>], <span class="string">&quot;--&quot;</span>, color=<span class="string">&quot;black&quot;</span>, lw=<span class="number">1</span>)</span><br><span class="line">        peak = x_plot[fitted.argmax()].item()</span><br><span class="line">        mae = (fitted - exact).<span class="built_in">abs</span>().mean().item()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;speed:<span class="number">4.1</span>f&#125;</span>       <span class="subst">&#123;peak:<span class="number">.3</span>f&#125;</span>        <span class="subst">&#123;(<span class="number">0.25</span> + speed * <span class="number">0.5</span>) % <span class="number">1</span>:<span class="number">.3</span>f&#125;</span>          <span class="subst">&#123;mae:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">ax.plot([], [], <span class="string">&quot;--&quot;</span>, color=<span class="string">&quot;black&quot;</span>, lw=<span class="number">1</span>, label=<span class="string">&quot;Exact&quot;</span>)</span><br><span class="line">ax.<span class="built_in">set</span>(xlabel=<span class="string">&quot;x (m)&quot;</span>, ylabel=<span class="string">&quot;u&quot;</span>, title=<span class="string">&quot;t = 0.5 s&quot;</span>, xlim=(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">ax.legend(loc=<span class="string">&quot;upper center&quot;</span>, bbox_to_anchor=(<span class="number">0.5</span>, -<span class="number">0.18</span>), ncol=<span class="number">4</span>, frameon=<span class="literal">False</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article15/001.png" alt="Random-sampling training: predicted curves at t&#x3D;0.5 s for 7 wave speeds, with the analytical solution"></p>
+<p><em>Solid lines are network predictions, the black dashed line is the analytical solution; the larger the wave speed, the further right the peak.</em></p>
+<table>
+<thead>
+<tr>
+<th>Belt speed</th>
+<th>Predicted peak (m)</th>
+<th>Analytic peak (m)</th>
+<th>Mean absolute color error</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0.3</td>
+<td>0.400</td>
+<td>0.400</td>
+<td>0.0056</td>
+</tr>
+<tr>
+<td>0.4</td>
+<td>0.450</td>
+<td>0.450</td>
+<td>0.0068</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>0.495</td>
+<td>0.500</td>
+<td>0.0058</td>
+</tr>
+<tr>
+<td>0.6</td>
+<td>0.545</td>
+<td>0.550</td>
+<td>0.0063</td>
+</tr>
+<tr>
+<td>0.7</td>
+<td>0.595</td>
+<td>0.600</td>
+<td>0.0083</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>0.650</td>
+<td>0.650</td>
+<td>0.0075</td>
+</tr>
+<tr>
+<td>0.9</td>
+<td>0.700</td>
+<td>0.700</td>
+<td>0.0072</td>
+</tr>
+</tbody></table>
+<p>The peak-position error does not exceed 0.005 m, and the mean absolute error over the whole curve stays steadily around $6\times10^{-3}$, commensurate with the expressive capacity of the network’s 32 hidden units.</p>
+<h3 id="Checking-a-Hand-Picked-Test-Point"><a href="#Checking-a-Hand-Picked-Test-Point" class="headerlink" title="Checking a Hand-Picked Test Point"></a>Checking a Hand-Picked Test Point</h3><p>Verify with one concrete point: $c=0.4$, $t=0.5$ s, $x=0.25$ m. In half a second the color point has moved $c t=0.20$ m, so the color here should be close to its value at the starting point $x=0.05$ m:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">speed = <span class="number">0.4</span></span><br><span class="line">time = <span class="number">0.5</span></span><br><span class="line">position = <span class="number">0.25</span>    </span><br><span class="line">x = torch.tensor([[position]])</span><br><span class="line">t = torch.tensor([[time]])</span><br><span class="line">c = torch.tensor([[speed]])</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Network prediction <span class="subst">&#123;predict(x, t, c).item():<span class="number">.4</span>f&#125;</span>, analytic color <span class="subst">&#123;initial_color(x - c*t).item():<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>Output:</p>
+<blockquote>
+<p>Network prediction 0.6556, analytic color 0.6545</p>
+</blockquote>
+<p>The relative error is about 0.17%, of the same magnitude as the mean errors in the table above.</p>
+<h3 id="Comparison-with-Regular-Grid-Sampling"><a href="#Comparison-with-Regular-Grid-Sampling" class="headerlink" title="Comparison with Regular Grid Sampling"></a>Comparison with Regular Grid Sampling</h3><p>Replace random sampling with a fixed uniform grid, keeping the number of collocation points unchanged ($8\times4\times4=128$):</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.Adam(net.parameters(), lr=<span class="number">0.002</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 1. Pre-build the 3D uniform grid of collocation points (PDE) ====================</span></span><br><span class="line"><span class="comment"># Point count breakdown: 8 * 4 * 4 = 128</span></span><br><span class="line">Nx, Nt, Nc = <span class="number">8</span>, <span class="number">4</span>, <span class="number">4</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># x is divided evenly over the half-open interval [0, 1) (under the periodic boundary x=0 and x=1 are equivalent, so coincident endpoints are avoided)</span></span><br><span class="line">x_1d = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, Nx + <span class="number">1</span>)[:-<span class="number">1</span>]</span><br><span class="line"><span class="comment"># t is divided evenly over the closed interval [0, 0.5]</span></span><br><span class="line">t_1d = torch.linspace(<span class="number">0</span>, <span class="number">0.5</span>, Nt)</span><br><span class="line"><span class="comment"># c is divided evenly over the closed interval [0.2, 1.0]</span></span><br><span class="line">c_1d = torch.linspace(<span class="number">0.2</span>, <span class="number">1.0</span>, Nc)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Build the Cartesian grid and flatten it to (128, 1)</span></span><br><span class="line">grid_x, grid_t, grid_c = torch.meshgrid(x_1d, t_1d, c_1d, indexing=<span class="string">&quot;ij&quot;</span>)</span><br><span class="line">x_grid = grid_x.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">t_grid = grid_t.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">c_grid = grid_c.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 2. Pre-build the 2D uniform initial-value grid (Initial) ====================</span></span><br><span class="line"><span class="comment"># Point count breakdown: 16 * 8 = 128</span></span><br><span class="line">Nx0, Nc0 = <span class="number">16</span>, <span class="number">8</span></span><br><span class="line">x0_1d = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, Nx0 + <span class="number">1</span>)[:-<span class="number">1</span>]</span><br><span class="line">c0_1d = torch.linspace(<span class="number">0.2</span>, <span class="number">1.0</span>, Nc0)</span><br><span class="line"></span><br><span class="line">grid_x0, grid_c0 = torch.meshgrid(x0_1d, c0_1d, indexing=<span class="string">&quot;ij&quot;</span>)</span><br><span class="line">x0_grid = grid_x0.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">c0_grid = grid_c0.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">t0_grid = torch.zeros_like(x0_grid)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ==================== 3. Training loop ====================</span></span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">5001</span>):</span><br><span class="line">    <span class="comment"># Clone the fixed grid and enable gradient tracking</span></span><br><span class="line">    x = x_grid.clone().requires_grad_()</span><br><span class="line">    t = t_grid.clone().requires_grad_()</span><br><span class="line">    c = c_grid</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Compute the PDE loss</span></span><br><span class="line">    u = predict(x, t, c)</span><br><span class="line">    u_x, u_t = torch.autograd.grad(u.<span class="built_in">sum</span>(), (x, t), create_graph=<span class="literal">True</span>)</span><br><span class="line">    loss_pde = (u_t + c * u_x).square().mean()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Compute the initial-condition loss (t = 0)</span></span><br><span class="line">    u_start = predict(x0_grid, t0_grid, c0_grid)</span><br><span class="line">    loss_initial = (u_start - initial_color(x0_grid)).square().mean()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Backpropagation and parameter update</span></span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line">    (loss_pde + <span class="number">4</span> * loss_initial).backward()</span><br><span class="line">    optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> step <span class="keyword">in</span> (<span class="number">1</span>, <span class="number">2500</span>, <span class="number">5000</span>):</span><br><span class="line">        <span class="built_in">print</span>(</span><br><span class="line">            <span class="string">f&quot;Step <span class="subst">&#123;step:4d&#125;</span>   equation error <span class="subst">&#123;loss_pde.item():<span class="number">.2</span>e&#125;</span>   initial error <span class="subst">&#123;loss_initial.item():<span class="number">.2</span>e&#125;</span>&quot;</span></span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>Run output:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Equation error</th>
+<th>Initial error</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>8.00e-03</td>
+<td>8.03e-05</td>
+</tr>
+<tr>
+<td>2500</td>
+<td>6.06e-04</td>
+<td>1.05e-04</td>
+</tr>
+<tr>
+<td>5000</td>
+<td>2.10e-05</td>
+<td>7.05e-06</td>
+</tr>
+</tbody></table>
+<p>Predict and visualize in the same way:</p>
+<p><img src="/en/img/article15/002.png" alt="Fixed-grid training: predicted curves after repeatedly optimizing the same set of 128 collocation points"></p>
+<p><em>The grid model fits more “tightly” at the training points, yet its curves drift away from the analytical solution sooner.</em></p>
+<table>
+<thead>
+<tr>
+<th>Belt speed</th>
+<th>Predicted peak (m)</th>
+<th>Analytic peak (m)</th>
+<th>Mean absolute color error</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0.3</td>
+<td>0.400</td>
+<td>0.400</td>
+<td>0.0120</td>
+</tr>
+<tr>
+<td>0.4</td>
+<td>0.445</td>
+<td>0.450</td>
+<td>0.0065</td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>0.500</td>
+<td>0.500</td>
+<td>0.0070</td>
+</tr>
+<tr>
+<td>0.6</td>
+<td>0.550</td>
+<td>0.550</td>
+<td>0.0136</td>
+</tr>
+<tr>
+<td>0.7</td>
+<td>0.600</td>
+<td>0.600</td>
+<td>0.0168</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>0.655</td>
+<td>0.650</td>
+<td>0.0160</td>
+</tr>
+<tr>
+<td>0.9</td>
+<td>0.705</td>
+<td>0.700</td>
+<td>0.0106</td>
+</tr>
+</tbody></table>
+<p>The contrast between the two approaches is instructive: the fixed grid’s <strong>training loss</strong> is nearly two orders of magnitude lower, yet its test mean absolute error is instead larger (about 2x that of random sampling at most wave speeds).</p>
+<h3 id="Why-the-Fixed-Grid-Is-Worse-Empirical-Risk-and-True-Risk"><a href="#Why-the-Fixed-Grid-Is-Worse-Empirical-Risk-and-True-Risk" class="headerlink" title="Why the Fixed Grid Is Worse: Empirical Risk and True Risk"></a>Why the Fixed Grid Is Worse: Empirical Risk and True Risk</h3><p>The ultimate goal of solving a PDE with a PINN is to minimize the <strong>expected risk</strong> over the entire continuous domain:</p>
+<p>$$
+\mathcal{L}_{\text{true}} = \int_{\Omega} \left\vert{} \frac{\partial u}{\partial t} + c \frac{\partial u}{\partial x} \right\vert{}^2 d\Omega = \mathbb{E}_{(x,t,c) \sim \mathcal{U}(\Omega)} \left[ \mathcal{R}^2(x,t,c) \right]
+$$</p>
+<ul>
+<li><p><strong>A fixed grid</strong> builds the empirical risk from only a very small number of points ($N=128$):</p>
+<p>$$
+  \hat{\mathcal{L}}_{\text{grid}} = \frac{1}{128} \sum_{i=1}^{128} \mathcal{R}^2(x_i^{\text{grid}}, t_i^{\text{grid}}, c_i^{\text{grid}})
+  $$</p>
+<p>The optimizer can drive $\hat{\mathcal{L}}_{\text{grid}}$ extremely low, but because the quadrature weights and sampling density are insufficient, this empirical value has already drifted far away from the true integral $\mathcal{L}_{\text{true}}$.</p>
+</li>
+<li><p><strong>Dynamic random sampling</strong> is a form of stochastic approximation: each iteration uses an independent Monte Carlo mini-batch, and the gradient updates push the model toward the minimizer of the continuous integral over the whole domain. Although the random fluctuation of a single batch keeps the printed loss hovering around $10^{-4}$, what the network learns is a robust approximation of the entire continuous solution manifold, and its corresponding $\mathcal{L}_{\text{true}}$ is far lower than that of the fixed-grid model.</p>
+</li>
+</ul>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><ul>
+<li>Treating the physical parameter $c$ as an input feature lets a single network cover the whole family of solutions; normalizing to $[-1,1]$ keeps <code>Tanh</code> working in its sensitive range.</li>
+<li>Encoding the periodic boundary into the inputs via $x \mapsto (\cos 2\pi x, \sin 2\pi x)$ makes the boundary condition hold by construction, with no penalty term needed.</li>
+<li>A low training loss does not mean high accuracy: fixed collocation lets the network “memorize” those points, whereas random sampling is what approximates the expected risk over the continuous domain.</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20261104202400.html">https://srrdhy.github.io/post/20261104202400.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/Parametric-PINN/">Parametric PINN</a></div><div class="post-share"><div class="social-share" data-image="/en/img/article15.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/en/post/20251123112856.html" title="Jacobian Matrix"><img class="cover" src="/en/img/article14.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Jacobian Matrix</div></div><div class="info-2"><div class="info-item-1">Jacobian MatrixConsider $f(x)=x^2$, whose derivative is $\frac{df}{dx}=2x$ When we move on to multi-variable functions, such as $f(x_1, x_2)=x_1^2+3x_1 x_2 +x_2^2$, we get:$$ \frac{\partial f}{\partial x_1} = 2x_1 + 3x_2 \quad \frac{\partial f}{\partial x_2} = 3x_1 + 2x_2 $$Suppose we have not just one function of several variables, but several such functions, all of them multi-variable:$$ \mathbf{f}(\mathbf{x}) = \begin{pmatrix} f_1(x_1, x_2) \\ f_2(x_1, x_2) \end{pmatrix} = \begin{pmatrix}...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/en/img/favicon.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">A technical blog: notes on physics, mathematics and AI.</div><div class="site-data"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Notes on physics, mathematics and machine learning.</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Governing-Equation"><span class="toc-number">1.</span> <span class="toc-text">The Governing Equation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Network-Construction"><span class="toc-number">2.</span> <span class="toc-text">Network Construction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Network-Training"><span class="toc-number">3.</span> <span class="toc-text">Network Training</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Prediction-and-Visualization"><span class="toc-number">4.</span> <span class="toc-text">Prediction and Visualization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Checking-a-Hand-Picked-Test-Point"><span class="toc-number">5.</span> <span class="toc-text">Checking a Hand-Picked Test Point</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Comparison-with-Regular-Grid-Sampling"><span class="toc-number">6.</span> <span class="toc-text">Comparison with Regular Grid Sampling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Why-the-Fixed-Grid-Is-Worse-Empirical-Risk-and-True-Risk"><span class="toc-number">7.</span> <span class="toc-text">Why the Fixed Grid Is Worse: Empirical Risk and True Risk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Summary"><span class="toc-number">8.</span> <span class="toc-text">Summary</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"><img src="/en/img/article15.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"/></a><div class="content"><a class="title" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</a><time datetime="2026-11-04T12:24:00.000Z" title="Created 2026-11-04 20:24:00">2026-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251123112856.html" title="Jacobian Matrix"><img src="/en/img/article14.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Jacobian Matrix"/></a><div class="content"><a class="title" href="/en/post/20251123112856.html" title="Jacobian Matrix">Jacobian Matrix</a><time datetime="2025-11-23T03:28:56.000Z" title="Created 2025-11-23 11:28:56">2025-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles"><img src="/en/img/article13.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 02 - Basic Principles"/></a><div class="content"><a class="title" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles">FB-PINN Paper Reading 02 - Basic Principles</a><time datetime="2025-11-20T08:43:59.000Z" title="Created 2025-11-20 16:43:59">2025-11-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"><img src="/en/img/article12.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"/></a><div class="content"><a class="title" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints">FB-PINN Paper Reading 01 - Normalization and Hard Constraints</a><time datetime="2025-11-13T13:06:38.000Z" title="Created 2025-11-13 21:06:38">2025-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img src="/en/img/article11.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Dual-Balancing PINN Paper Reading (Part 2)"/></a><div class="content"><a class="title" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)">Dual-Balancing PINN Paper Reading (Part 2)</a><time datetime="2025-11-01T11:01:03.000Z" title="Created 2025-11-01 19:01:03">2025-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By FAVE</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

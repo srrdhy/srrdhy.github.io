@@ -1,0 +1,266 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Dual-Balancing PINN Paper Reading (Part 1) | A Digital Homestead — DIY Knowledge Base</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Physics-Informed Neural NetworksThe core idea is to build a neural network with parameters $\theta$ that learns an approximate solution $\hat{u}_\theta (\mathbf{x}, t)$ of the PDE $$  \begin{align*} \">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dual-Balancing PINN Paper Reading (Part 1)">
+<meta property="og:url" content="https://srrdhy.github.io/post/20251031214414.html">
+<meta property="og:site_name" content="A Digital Homestead — DIY Knowledge Base">
+<meta property="og:description" content="Physics-Informed Neural NetworksThe core idea is to build a neural network with parameters $\theta$ that learns an approximate solution $\hat{u}_\theta (\mathbf{x}, t)$ of the PDE $$  \begin{align*} \">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://srrdhy.github.io/img/article10.jpg">
+<meta property="article:published_time" content="2025-10-31T13:44:14.000Z">
+<meta property="article:modified_time" content="2026-11-04T12:50:59.431Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="Dynamic Weighting">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article10.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Dual-Balancing PINN Paper Reading (Part 1)",
+  "url": "https://srrdhy.github.io/post/20251031214414.html",
+  "image": "https://srrdhy.github.io/img/article10.jpg",
+  "datePublished": "2025-10-31T13:44:14.000Z",
+  "dateModified": "2026-11-04T12:50:59.431Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/en/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20251031214414.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/en/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/en/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Dual-Balancing PINN Paper Reading (Part 1)',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><script src="/js/lang-switch.js" defer></script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article10.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/en/"><span class="site-name">A Digital Homestead — DIY Knowledge Base</span></a><a class="nav-page-title" href="/en/"><span class="site-name">Dual-Balancing PINN Paper Reading (Part 1)</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Dual-Balancing PINN Paper Reading (Part 1)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-31T13:44:14.000Z" title="Created 2025-10-31 21:44:14">2025-10-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-11-04T12:50:59.431Z" title="Updated 2026-11-04 20:50:59">2026-11-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/en/categories/PINN/">PINN</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h3 id="Physics-Informed-Neural-Networks"><a href="#Physics-Informed-Neural-Networks" class="headerlink" title="Physics-Informed Neural Networks"></a>Physics-Informed Neural Networks</h3><p>The core idea is to build a neural network with parameters $\theta$ that learns an approximate solution $\hat{u}_\theta (\mathbf{x}, t)$ of the PDE</p>
+<p>$$ 
+\begin{align*} \mathcal{N}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &amp;= f(\mathbf{x}, t), \quad \mathbf{x} \in \Omega, \, t \in [0, T] \\ 
+\mathcal{B}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &amp;= g(\mathbf{x}, t), \quad \mathbf{x} \in \partial\Omega, \, t \in [0, T] \\ 
+u(\mathbf{x}, 0) &amp;= h(\mathbf{x}), \quad \mathbf{x} \in \Omega \end{align*} 
+$$</p>
+<p>We sample points $\left\{ \left( \mathbf{X}_i^r, t_i^r \right) \right\}_{i=1}^{N_r}$ in the spatio-temporal domain $(\Omega \times [0, T])$ and compute the PDE residual loss:<br>$$
+\mathcal{L}^r(\theta) = \frac{1}{N_r} \sum_{i=1}^{N_r} \left\| \mathcal{N}_{\mathbf{x}, t} \left[ \hat{u}_\theta \left( \mathbf{x}_i^r, t_i^r \right) \right] - f \left( \mathbf{x}_i^r, t_i^r \right) \right\|^2
+$$<br>plus a group of condition losses, such as boundary conditions, initial conditions, and additional data.</p>
+<p>During PINN training, the weight coefficients are numbers of enormous influence that are nonetheless hard to tune. Many researchers have sought dynamic weighting methods, and the two main routes today are the learning approach and the calculating approach.</p>
+<p>The learning approach treats the weight coefficients as learnable parameters optimized together within the network; the calculating approach takes the perspective of the neural tangent kernel (NTK) and computes the weights from the ratio of gradient magnitudes $\left| \nabla_\theta \mathcal{L}^r \right| / \left| \nabla_\theta \mathcal{L}^i \right|$. DB-PINN complements GW-PINN, a concrete recipe within the existing calculating approach.</p>
+<p><img src="/en/img/article10/001.png"></p>
+<h3 id="GW-PINN"><a href="#GW-PINN" class="headerlink" title="GW-PINN"></a>GW-PINN</h3><p>It aims at inter-balancing, as shown inside the yellow box in the figure above. Prior work has shown that the PDE residual usually dominates among the loss terms, so the weight coefficient of the residual term is now fixed to 1, and the weights of the remaining condition loss terms are adjusted during training.<br>$$
+\mathcal{G} = \sum_{i=1}^{M} \frac{\max\left\{ \left| \nabla_\theta \mathcal{L}^r \right| \right\}}{\left| \nabla_\theta \lambda^i \mathcal{L}^i \right|}
+$$</p>
+<p>The total loss typically consists of four atomic losses: the residual loss $L_r$, the boundary loss $L_{bc}$, the initial loss $L_{ic}$, and the data loss $L_{d}$,<br>$$
+\mathcal{L} = L_r + \lambda_{bc} L_{bc} + \lambda_{ic} L_{ic} + \lambda_d L_d
+$$<br>In practice, gradient imbalance frequently arises during training: the back-propagated gradient of one term with respect to the network parameters is far larger than those of the others, so the other terms “learn nothing”.</p>
+<p>What GW-PINN does is align the magnitudes of the gradients of the various losses with respect to the network parameters. The recipe is to give each condition term a weight<br>$$
+\lambda_i \propto \frac{s_r}{s_i}
+$$<br>where $s_r$ is the “gradient scale of the residual term” and $s_i$ is the gradient scale of the $i$-th condition term ($bc,ic,d$). This way, when a condition term’s gradient is on the small side, its $\lambda_i$ is amplified, and vice versa, so that alignment across classes (inter) is achieved.</p>
+<p>Depending on the algorithms for $s_r$ and $s_i$, GW-PINN has 3 different implementations:</p>
+<p>method 1, the mean version:<br>$$
+s_r = \max\left| \nabla_\theta L_r \right|, \quad s_i = \operatorname{mean}\left| \nabla_\theta L_i \right|
+$$<br>weight update:<br>$$
+\lambda_i \leftarrow (1 - \alpha)\lambda_i + \alpha \cdot \frac{s_r}{s_i}
+$$<br>Here EMA (Exponential Moving Average) smoothing is used for the weight update to suppress transient noise; for example, $\alpha$ is taken as 0.1</p>
+<p>method 2, the std version:<br>$$
+s_r = std\left( \nabla_\theta L_r \right), \quad s_i = std\left( \nabla_\theta L_i \right)
+$$<br>same update as above</p>
+<p>method 3, the kurt version:</p>
+<p>First construct $\text{cov} = \text{std}/\text{kurt}$, then update the weights:<br>$$
+\lambda_i \leftarrow (1 - \alpha)\lambda_i + \alpha \cdot \frac{\text{cov}_r}{\text{cov}_i}
+$$</p>
+<p>In the code, taking method 1 as an example:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> method == <span class="number">1</span>:</span><br><span class="line">	<span class="comment"># max/avg</span></span><br><span class="line">	lamb_hat = maxr/meanb</span><br><span class="line">	lambd_bc     = (<span class="number">1</span>-alpha_ann)*lambd_bc + alpha_ann*lamb_hat </span><br><span class="line">	lamb_hat = maxr/meani</span><br><span class="line">	lambd_ic     = (<span class="number">1</span>-alpha_ann)*lambd_ic + alpha_ann*lamb_hat </span><br><span class="line">	lamb_hat = maxr/meand</span><br><span class="line">	lambd_d      = (<span class="number">1</span>-alpha_ann)*lambd_d + alpha_ann*lamb_hat </span><br></pre></td></tr></table></figure>
+
+<p>The <code>max</code>, <code>mean</code>, <code>std</code> and <code>kurt</code> values used here are produced by the <code>loss_grad_stats</code> and <code>loss_grad_max_mean</code> functions:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">stdr,kurtr=loss_grad_stats(l_reg, net)   </span><br><span class="line">stdb,kurtb=loss_grad_stats(l_bc, net)</span><br><span class="line">stdi,kurti=loss_grad_stats(l_ic, net)</span><br><span class="line">stdd,kurtd=loss_grad_stats(l_data, net)</span><br><span class="line"></span><br><span class="line">maxr,meanr=loss_grad_max_mean(l_reg, net)  </span><br><span class="line">maxb,meanb=loss_grad_max_mean(l_bc, net,lambg=lambd_bc)  </span><br><span class="line">maxi,meani=loss_grad_max_mean(l_ic, net,lambg=lambd_ic)</span><br><span class="line">maxd,meand=loss_grad_max_mean(l_data, net,lambg=lambd_d)</span><br></pre></td></tr></table></figure>
+
+<p>Note that for stability the weights are updated once every 10 Adam steps (LBFGS updates are too slow, so they are generally not updated here)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> epoch % mm == <span class="number">0</span>:   <span class="comment"># mm = 10</span></span><br></pre></td></tr></table></figure>
+
+<p>The resulting weights are then fed into the total loss computation:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = l_reg + lambd_bc.item()*l_bc + lambd_ic.item()*l_ic + lambd_d.item()*l_data</span><br></pre></td></tr></table></figure>
+<p>Note that .item() explicitly converts to a Python scalar so that it does not take part in the computation graph (we do not want λ to be back-propagated)</p>
+<h3 id="Algorithms-for-max-mean-std-and-kurt"><a href="#Algorithms-for-max-mean-std-and-kurt" class="headerlink" title="Algorithms for max, mean, std and kurt"></a>Algorithms for max, mean, std and kurt</h3><p>Taking method 1 as an example, the “scale” of the residual term is<br>$$
+S_r = \max_{\theta} \left| \nabla_{\theta} L_r \right|
+$$<br>that is: the global maximum, over all trainable parameters $\theta$, of the absolute value of the gradient of $L_r$.</p>
+<p>The “scale” of a condition term (bc&#x2F;ic&#x2F;data) is<br>$$
+S_i = \operatorname{mean}_{\theta} \left| \nabla_\theta (\lambda_i L_i) \right|
+$$<br>that is: for each condition term $L_i$, under the current weight $\lambda_i$, the overall mean of the absolute values of the gradients with respect to all parameters. Note that $\lambda_i$ appears here, corresponding to the <code>lambg</code> argument of the <code>loss_grad_max_mean</code> function; since the residual term $L_r$ has a weight of 1 by default, no <code>lambg</code> argument needs to be passed for it.</p>
+<p>The concrete implementation of the <code>loss_grad_max_mean</code> function is as follows</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">loss_grad_max_mean</span>(<span class="params">loss, net, lambg=<span class="number">1</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    inputs: loss: loss function ; net: the NN model; lambg : term for weighted stats (optional)</span></span><br><span class="line"><span class="string">    outputs: max and mean</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    device = torch.device(<span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span>)</span><br><span class="line">    grad_ = torch.zeros((<span class="number">0</span>), dtype=torch.float64,device=device)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># iterate over all layers of the network, looking only at nn.Linear parameters (weights and biases)</span></span><br><span class="line">    <span class="keyword">for</span> m <span class="keyword">in</span> net.modules():</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">isinstance</span>(m, nn.Linear): </span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(m == <span class="number">0</span>):</span><br><span class="line">            w = torch.<span class="built_in">abs</span>(lambg*grad(loss, m.weight, retain_graph=<span class="literal">True</span>, allow_unused=<span class="literal">True</span>)[<span class="number">0</span>])</span><br><span class="line">            b = torch.<span class="built_in">abs</span>(lambg*grad(loss, m.bias, retain_graph=<span class="literal">True</span>, allow_unused=<span class="literal">True</span>)[<span class="number">0</span>])        </span><br><span class="line">            grad_ = torch.cat((w.view(-<span class="number">1</span>), b))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            w = torch.<span class="built_in">abs</span>(lambg*grad(loss, m.weight, retain_graph=<span class="literal">True</span>, allow_unused=<span class="literal">True</span>)[<span class="number">0</span>]) <span class="comment"># absolute value</span></span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> grad(loss, m.bias, retain_graph=<span class="literal">True</span>, allow_unused=<span class="literal">True</span>)[<span class="number">0</span>] <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                b = <span class="literal">None</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                b = torch.<span class="built_in">abs</span>(lambg*grad(loss, m.bias, retain_graph=<span class="literal">True</span>, allow_unused=<span class="literal">True</span>)[<span class="number">0</span>])    </span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> b <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                grad_ = torch.cat((grad_,w.view(-<span class="number">1</span>), b))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                grad_ = torch.cat((grad_,w.view(-<span class="number">1</span>)))</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># max and mean of the absolute gradient values</span></span><br><span class="line">    maxgrad = torch.<span class="built_in">max</span>(grad_)</span><br><span class="line">    meangrad = torch.mean(grad_)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> maxgrad,meangrad </span><br></pre></td></tr></table></figure>
+
+<p>After traversing all layers of the network, for every parameter $p$ (m.weight, m.bias), take $\nabla_{p}loss$:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.autograd.grad(loss, p, retain_graph=<span class="literal">True</span>, allow_unused=<span class="literal">True</span>)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+<p>multiply by the passed-in <code>lambg</code>, take the absolute value, flatten, and concatenate into a very long one-dimensional vector <code>grad_</code>, which represents the distribution of gradient magnitudes of that loss over the entire network under the current weights.</p>
+<p>The values of <code>std</code> and <code>kurt</code> are obtained similarly and are given in <code>loss_grad_stats</code>.</p>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2505.11117v3">[2505.11117v3] Dual-Balancing for Physics-Informed Neural Networks</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20251031214414.html">https://srrdhy.github.io/post/20251031214414.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/Dynamic-Weighting/">Dynamic Weighting</a></div><div class="post-share"><div class="social-share" data-image="/en/img/article10.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/en/post/20251025131418.html" title="Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11"><img class="cover" src="/en/img/article09.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11</div></div><div class="info-2"><div class="info-item-1">Thanks to the expert for the tutorial; here is a written version with some additions:  Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11_bilibili  Press Win+R and type control to open Control Panel, then find Programs Select Turn Windows features on or off Turn on everything related to virtualization, including Virtual Machine Platform, Windows Hypervisor Platform and Windows Subsystem for Linux, then restart the computer for the changes to take...</div></div></div></a><a class="pagination-related" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img class="cover" src="/en/img/article11.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Dual-Balancing PINN Paper Reading (Part 2)</div></div><div class="info-2"><div class="info-item-1">DB-PINN Now look at the part inside the red box in the figure above: once the difficulty coefficient is incorporated, GW-PINN transitions into DB-PINN, which blends inter-balancing and intra-balancing. Similar to method 1 in GW-PINN, which uses max and mean, take DB_PINN_mean in DB-PINN as an example. First perform the equivalent of GW-PINN, computing for each constraint term $i \in \{ \text{bc}, \text{ic}, \text{d} \}$ the ratio:$$ \frac{S_r}{S_i} = \frac{\max |\nabla...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img class="cover" src="/en/img/article11.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-01</div><div class="info-item-2">Dual-Balancing PINN Paper Reading (Part 2)</div></div><div class="info-2"><div class="info-item-1">DB-PINN Now look at the part inside the red box in the figure above: once the difficulty coefficient is incorporated, GW-PINN transitions into DB-PINN, which blends inter-balancing and intra-balancing. Similar to method 1 in GW-PINN, which uses max and mean, take DB_PINN_mean in DB-PINN as an example. First perform the equivalent of GW-PINN, computing for each constraint term $i \in \{ \text{bc}, \text{ic}, \text{d} \}$ the ratio:$$ \frac{S_r}{S_i} = \frac{\max |\nabla...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/en/img/favicon.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">A technical blog: notes on physics, mathematics and AI.</div><div class="site-data"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Notes on physics, mathematics and machine learning.</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Physics-Informed-Neural-Networks"><span class="toc-number">1.</span> <span class="toc-text">Physics-Informed Neural Networks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GW-PINN"><span class="toc-number">2.</span> <span class="toc-text">GW-PINN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Algorithms-for-max-mean-std-and-kurt"><span class="toc-number">3.</span> <span class="toc-text">Algorithms for max, mean, std and kurt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"><img src="/en/img/article15.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"/></a><div class="content"><a class="title" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</a><time datetime="2026-11-04T12:24:00.000Z" title="Created 2026-11-04 20:24:00">2026-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251123112856.html" title="Jacobian Matrix"><img src="/en/img/article14.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Jacobian Matrix"/></a><div class="content"><a class="title" href="/en/post/20251123112856.html" title="Jacobian Matrix">Jacobian Matrix</a><time datetime="2025-11-23T03:28:56.000Z" title="Created 2025-11-23 11:28:56">2025-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles"><img src="/en/img/article13.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 02 - Basic Principles"/></a><div class="content"><a class="title" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles">FB-PINN Paper Reading 02 - Basic Principles</a><time datetime="2025-11-20T08:43:59.000Z" title="Created 2025-11-20 16:43:59">2025-11-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"><img src="/en/img/article12.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"/></a><div class="content"><a class="title" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints">FB-PINN Paper Reading 01 - Normalization and Hard Constraints</a><time datetime="2025-11-13T13:06:38.000Z" title="Created 2025-11-13 21:06:38">2025-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img src="/en/img/article11.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Dual-Balancing PINN Paper Reading (Part 2)"/></a><div class="content"><a class="title" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)">Dual-Balancing PINN Paper Reading (Part 2)</a><time datetime="2025-11-01T11:01:03.000Z" title="Created 2025-11-01 19:01:03">2025-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By FAVE</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

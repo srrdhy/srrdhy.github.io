@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11 | A Digital Homestead — DIY Knowledge Base</title><meta name="author" content="FAVE"><meta name="copyright" content="FAVE"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Thanks to the expert for the tutorial; here is a written version with some additions:  Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11_bilibili  Press Win+R and">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11">
+<meta property="og:url" content="https://srrdhy.github.io/post/20251025131418.html">
+<meta property="og:site_name" content="A Digital Homestead — DIY Knowledge Base">
+<meta property="og:description" content="Thanks to the expert for the tutorial; here is a written version with some additions:  Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11_bilibili  Press Win+R and">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://srrdhy.github.io/img/article09.jpg">
+<meta property="article:published_time" content="2025-10-25T05:14:18.000Z">
+<meta property="article:modified_time" content="2026-11-04T12:50:55.314Z">
+<meta property="article:author" content="FAVE">
+<meta property="article:tag" content="WSL">
+<meta property="article:tag" content="Ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://srrdhy.github.io/img/article09.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11",
+  "url": "https://srrdhy.github.io/post/20251025131418.html",
+  "image": "https://srrdhy.github.io/img/article09.jpg",
+  "datePublished": "2025-10-25T05:14:18.000Z",
+  "dateModified": "2026-11-04T12:50:55.314Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "FAVE",
+      "url": "https://srrdhy.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/en/img/favicon.png"><link rel="canonical" href="https://srrdhy.github.io/post/20251025131418.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/en/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/en/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><script src="/js/lang-switch.js" defer></script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/article09.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/en/"><span class="site-name">A Digital Homestead — DIY Knowledge Base</span></a><a class="nav-page-title" href="/en/"><span class="site-name">Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-25T05:14:18.000Z" title="Created 2025-10-25 13:14:18">2025-10-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-11-04T12:50:55.314Z" title="Updated 2026-11-04 20:50:55">2026-11-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/en/categories/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Thanks to the expert for the tutorial; here is a written version with some additions:</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1qbQGYPEg7/?spm_id_from=333.337.search-card.all.click&vd_source=b8ce1e24661813e17c0c1abf3b2df0ff">Installing and Running Ubuntu 24.04 with a Graphical Interface Using WSL on Windows 11_bilibili</a></p>
+</blockquote>
+<p>Press Win+R and type control to open Control Panel, then find Programs<br><img src="/en/img/article09/001.png"></p>
+<p>Select Turn Windows features on or off<br><img src="/en/img/article09/002.png"></p>
+<p>Turn on everything related to virtualization, including Virtual Machine Platform, Windows Hypervisor Platform and Windows Subsystem for Linux, then restart the computer for the changes to take effect.<br><img src="/en/img/article09/003.png"></p>
+<p>Press Win+R, type cmd to open a command-line window, and enter:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --update</span><br></pre></td></tr></table></figure>
+
+<p>After the update finishes, enter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -v</span><br></pre></td></tr></table></figure>
+
+<p>to check the version and kernel information<br><img src="/en/img/article09/004.png"></p>
+<p>If you have installed a Linux system before, you can list the installed WSL distributions</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --list --verbose</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article09/005.png"></p>
+<p>Delete the redundant Ubuntu distributions, for example</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --unregister Ubuntu-24.04</span><br></pre></td></tr></table></figure>
+<p>Once executed, all data of that Ubuntu distribution (files, configurations, installed software and so on) will be <strong>completely deleted</strong> and cannot be recovered.</p>
+<p>Enter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --list --online</span><br></pre></td></tr></table></figure>
+
+<p>to list the Linux distributions available for installation<br><img src="/en/img/article09/006.png"></p>
+<p>Choose the version you need and download it; here we enter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --install Ubuntu-24.04</span><br></pre></td></tr></table></figure>
+
+<p>After the installation finishes, enter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl -l -v</span><br></pre></td></tr></table></figure>
+<p>to confirm that the installation succeeded</p>
+<p>Enter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl</span><br></pre></td></tr></table></figure>
+<p>and the system will prompt you for a username and password</p>
+<p>Once that is set up, you will enter the Ubuntu shell environment. From then on there are two ways to get in:</p>
+<ol>
+<li>Search for Ubuntu in the Windows search box</li>
+<li>Type wsl in a cmd window</li>
+</ol>
+<p>Confirm the system version</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/os-release</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article09/007.png"></p>
+<p>Next, use the package manager to update the Ubuntu system</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br></pre></td></tr></table></figure>
+
+<p>Install neofetch and htop to verify the integrity of the system</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install neofetch htop</span><br></pre></td></tr></table></figure>
+
+<p>Run neofetch for an ASCII-art overview of the system information</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">neofetch</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article09/008.png"></p>
+<p>htop shows how the system is running</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">htop</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article09/009.png"></p>
+<p>From this we can confirm that WSL and Ubuntu work properly</p>
+<p>Install a couple of GUI applications to test them; here -y means automatically answering yes during installation</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gimp blender -y</span><br></pre></td></tr></table></figure>
+
+<p>When it is done, launch gimp for the first time and you will feel how extremely smoothly it loads</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gimp</span><br></pre></td></tr></table></figure>
+
+<p><img src="/en/img/article09/010.png"></p>
+<p>Not only that: when you open the Windows Start menu, you can also see the software installed in Ubuntu neatly arranged<br><img src="/en/img/article09/011.png"></p>
+<p>You can treat them exactly like Windows software, for example pinning them to the desktop and opening them directly, but they start faster inside Ubuntu<br><img src="/en/img/article09/012.png"></p>
+<p>Next, we will add an efficient graphical desktop, XFCE 4. Run the following command</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install xfce4-goodies</span><br></pre></td></tr></table></figure>
+
+<p>Next we install xrdp (X Remote Desktop Protocol), which is the bridge for remote access</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install xrdp</span><br></pre></td></tr></table></figure>
+
+<p>After the installation finishes, enter the following commands in order:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak </span><br><span class="line">sudo sed -i &#x27;s/3389/3390/g&#x27; /etc/xrdp/xrdp.ini </span><br><span class="line">sudo sed -i &#x27;s/max_bpp=32/#max_bpp=32\nmax_bpp=128/g&#x27; /etc/xrdp/xrdp.ini </span><br><span class="line">sudo sed -i &#x27;s/xserverbpp=24/#xserverbpp=24\nxserverbpp=128/g&#x27; /etc/xrdp/xrdp.ini sudo /etc/init.d/xrdp start</span><br></pre></td></tr></table></figure>
+
+<p>Use nano to edit the startup script</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
+
+<p>Modify it as follows: comment out the last two lines and add three lines<br><img src="/en/img/article09/013.png"></p>
+<p>Press Ctrl + O to save and Ctrl + X to exit</p>
+<p>Restart xrdp again to make sure it takes effect:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/xrdp start</span><br></pre></td></tr></table></figure>
+
+<p>In the search bar of the Windows desktop menu, search for Remote Desktop Connection and enter</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:3390</span><br></pre></td></tr></table></figure>
+
+<p>After clicking connect, if the following bug appears:<br><img src="/en/img/article09/014.png"></p>
+<p>Install ufw</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt install ufw -y</span><br></pre></td></tr></table></figure>
+
+<p>Enable the firewall and allow TCP connections on port 3390</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw enable </span><br><span class="line">sudo ufw allow 3390/tcp </span><br></pre></td></tr></table></figure>
+
+<p>Check whether the firewall rules have taken effect</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
+<p>Normally it will show</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Status: active </span><br><span class="line"></span><br><span class="line">To             Action  From </span><br><span class="line">--             ------  ---- </span><br><span class="line">3390/tcp       ALLOW   Anywhere </span><br><span class="line">3390/tcp (v6)  ALLOW   Anywhere (v6)</span><br></pre></td></tr></table></figure>
+
+<p>Get the IP address in the WSL terminal; the output is similar to 172.28.156.89</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip addr show eth0 | grep -oP &#x27;(?&lt;=inet\s)\d+(\.\d+)&#123;3&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>Where it previously said localhost:3390, replace it with 172.28.156.89:3390</p>
+<p>After connecting, enter the Ubuntu username and password you set earlier and click OK<br><img src="/en/img/article09/015.png"></p>
+<p>Congratulations, you are now in the desktop environment; you can log out from the top-right corner<br><img src="/en/img/article09/016.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io">FAVE</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://srrdhy.github.io/post/20251025131418.html">https://srrdhy.github.io/post/20251025131418.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/en/tags/WSL/">WSL</a><a class="post-meta__tags" href="/en/tags/Ubuntu/">Ubuntu</a></div><div class="post-share"><div class="social-share" data-image="/en/img/article09.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/en/post/20250617195001.html" title="SDF-PINN Signed Distance Function"><img class="cover" src="/en/img/article08.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">SDF-PINN Signed Distance Function</div></div><div class="info-2"><div class="info-item-1">SDF, the signed distance function, is a function that expresses the distance between an object’s surface and any point in space.  For points inside the object, the SDF value is positive; For points outside the object, the SDF value is negative; For points on the object’s surface, the SDF value is zero.The SDF describes an object’s geometry and boundary precisely, which makes it convenient to handle complex geometric problems.  For example, for the circular domain $\Omega = \{ \mathbf{x} :...</div></div></div></a><a class="pagination-related" href="/en/post/20251031214414.html" title="Dual-Balancing PINN Paper Reading (Part 1)"><img class="cover" src="/en/img/article10.jpg" onerror="onerror=null;src='/en/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Dual-Balancing PINN Paper Reading (Part 1)</div></div><div class="info-2"><div class="info-item-1">Physics-Informed Neural NetworksThe core idea is to build a neural network with parameters $\theta$ that learns an approximate solution $\hat{u}_\theta (\mathbf{x}, t)$ of the PDE $$  \begin{align*} \mathcal{N}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &amp;= f(\mathbf{x}, t), \quad \mathbf{x} \in \Omega, \, t \in [0, T] \\  \mathcal{B}_{\mathbf{x}, t}[u(\mathbf{x}, t)] &amp;= g(\mathbf{x}, t), \quad \mathbf{x} \in \partial\Omega, \, t \in [0, T] \\  u(\mathbf{x}, 0) &amp;= h(\mathbf{x}), \quad...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/en/img/favicon.png" onerror="this.onerror=null;this.src='/en/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">FAVE</div><div class="author-info-description">A technical blog: notes on physics, mathematics and AI.</div><div class="site-data"><a href="/en/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/en/tags/"><div class="headline">Tags</div><div class="length-num">12</div></a><a href="/en/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/srrdhy"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/srrdhy" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">Notes on physics, mathematics and machine learning.</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"><img src="/en/img/article15.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Parametric PINN: One Moving Color Band, a Whole Family of Solutions"/></a><div class="content"><a class="title" href="/en/post/20261104202400.html" title="Parametric PINN: One Moving Color Band, a Whole Family of Solutions">Parametric PINN: One Moving Color Band, a Whole Family of Solutions</a><time datetime="2026-11-04T12:24:00.000Z" title="Created 2026-11-04 20:24:00">2026-11-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251123112856.html" title="Jacobian Matrix"><img src="/en/img/article14.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Jacobian Matrix"/></a><div class="content"><a class="title" href="/en/post/20251123112856.html" title="Jacobian Matrix">Jacobian Matrix</a><time datetime="2025-11-23T03:28:56.000Z" title="Created 2025-11-23 11:28:56">2025-11-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles"><img src="/en/img/article13.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 02 - Basic Principles"/></a><div class="content"><a class="title" href="/en/post/20251120164359.html" title="FB-PINN Paper Reading 02 - Basic Principles">FB-PINN Paper Reading 02 - Basic Principles</a><time datetime="2025-11-20T08:43:59.000Z" title="Created 2025-11-20 16:43:59">2025-11-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"><img src="/en/img/article12.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="FB-PINN Paper Reading 01 - Normalization and Hard Constraints"/></a><div class="content"><a class="title" href="/en/post/20251113210638.html" title="FB-PINN Paper Reading 01 - Normalization and Hard Constraints">FB-PINN Paper Reading 01 - Normalization and Hard Constraints</a><time datetime="2025-11-13T13:06:38.000Z" title="Created 2025-11-13 21:06:38">2025-11-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)"><img src="/en/img/article11.jpg" onerror="this.onerror=null;this.src='/en/img/404.jpg'" alt="Dual-Balancing PINN Paper Reading (Part 2)"/></a><div class="content"><a class="title" href="/en/post/20251101190103.html" title="Dual-Balancing PINN Paper Reading (Part 2)">Dual-Balancing PINN Paper Reading (Part 2)</a><time datetime="2025-11-01T11:01:03.000Z" title="Created 2025-11-01 19:01:03">2025-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2026 By FAVE</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/en/js/utils.js"></script><script src="/en/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
